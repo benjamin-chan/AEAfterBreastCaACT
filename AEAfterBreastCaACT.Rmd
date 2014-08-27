@@ -64,6 +64,9 @@ Notes:
 
 # Analysis
 
+
+## Using random-effects model
+
 Load required packages
 
 ```{r}
@@ -76,20 +79,30 @@ Recreate the analysis from Nelson (2009); Screening for Breast Cancer: An Update
 Here's the dataset from the figure on page 730.
 
 ```{r MakeData}
-study <- c("HIP", "Kopparberg", "CNBSS-1", "Malmö", "Stockholm", "Östergötland", "Gothenberg", "Age")
-year <- c(1986, 1995, 2002, 2002, 2002, 2002, 2003, 2006)
-deaths1 <- c(64, 22, 105, 53, 34, 31, 34, 105)
-n1 <- c(13740, 9582, 25214, 13568, 14303, 10285, 11724, 53884)
-deaths2 <- c(82, 16, 108, 66, 13, 30, 59, 251)
-n2 <- c(13740, 5031, 25216, 12279, 8021, 10459, 14217, 106956)
-D <- data.frame(study, year, deaths1, n1, deaths2, n2)
-print(D)
+study <- c('AGE', 'CNBSS-1', 'HIP', 'Gothenburg', 'Stockholm', 'Malmo', 'Kopparberg', 'Ostergotland')
+yInt   <- c(    105,    105,     64,     34,     34,     53,     22,     31)
+nInt   <- c(  53884,  25214,  13740,  11724,  14303,  13568,   9582,  10285)
+pyInt  <- c( 578390, 282606, 192360,     NA, 203000, 184000, 124566, 172000)
+yCntl  <- c(    251,    108,     82,     59,     13,     66,     16,     30)
+nCntl  <- c( 106956,  25216,  13740,  14217,   8021,  12279,   5031,  10459)
+pyCntl <- c(1149380, 282575, 192360,     NA, 117000, 160000,  65403, 176000)
+n <- 10000
+rateInt  <- n * yInt  / nInt
+rateCntl <- n * yCntl / nCntl
+rr <- rateInt / rateCntl
+rd <- rateInt - rateCntl
+nns <- 1 / ((yCntl / nCntl) - (yInt / nInt))
+D <- data.frame(study,
+                yInt , nInt , pyInt , rateInt ,
+                yCntl, nCntl, pyCntl, rateCntl,
+                rr, rd, nns)
+D
 ```
 
 Fit a random effects model for the relative risk.
 
 ```{r FitModelRR}
-RR <- rma(measure="RR", data=D, ai=deaths1, n1i=n1, ci=deaths2, n2i=n2)
+RR <- rma(measure="RR", data=D, ai=yInt, n1i=nInt, ci=yCntl, n2i=nCntl)
 summary(RR)
 predict(RR, transf=exp)
 ```
@@ -112,11 +125,10 @@ Plot summary forest plot.
 forest(RR, slab=study, transf=exp, ref=1)
 ```
 
-
 Fit a random effects model for the relative difference.
 
 ```{r FitModelRD}
-RD <- rma(measure="RD", data=D, ai=deaths1, n1i=n1, ci=deaths2, n2i=n2)
+RD <- rma(measure="RD", data=D, ai=yInt, n1i=nInt, ci=yCntl, n2i=nCntl)
 summary(RD)
 predict(RD)
 ```
@@ -137,4 +149,84 @@ Plot summary forest plot.
 
 ```{r ForestPlotRD}
 forest(RD, slab=study, digits=4)
+```
+
+
+## Using JAGS
+
+Load `R2jags`.
+
+```{r}
+require(R2jags, quietly=TRUE)
+```
+
+Specify the model using JAGS syntax.
+Write the model to a text file.
+
+```{r}
+cat("
+model
+{
+  for( i in 1 : n ) {
+    z[i] ~ dnorm(0, 1)
+    logit(pInt[i] ) <- alpha + beta + sigma * z[i]
+    logit(pCntl[i]) <- alpha        + sigma * z[i]
+    yInt[i]  ~ dbin(pInt[i] , nInt[i] )
+    yCntl[i] ~ dbin(pCntl[i], nCntl[i])
+  }
+  alpha ~ dnorm(-5.0, 1.0E-1)
+  beta  ~ dnorm(0.0, 1.0E-1)
+  sigma ~ dnorm( 0.5, 1.0E-1) I(0, )
+  # sigma ~ dgamma(0.001, 0.001)
+}
+",
+file="modelMetaAnalysis.txt")
+```
+
+Prepare the data for JAGS.
+`R2jags` requires the data object to be a list.
+
+```{r}
+DJags <- list(n=nrow(D), yInt=D$yInt, nInt=D$nInt, yCntl=D$yCntl, nCntl=D$nCntl)
+```
+
+Initialize the parameters.
+
+```{r}
+inits <- function() {list("alpha"=0, "beta"=0, "sigma"=0, "z"=rep(0, nrow(D)))}
+```
+
+Specify the parameters to track.
+
+```{r}
+params <- c("alpha", "beta", "sigma")
+```
+
+Set the random number seed.
+
+```{r}
+set.seed(as.numeric(as.Date("2014-08-27")))
+```
+
+Run the model.
+
+```{r}
+M <- jags(DJags, inits, params, model.file="modelMetaAnalysis.txt", n.iter=50000)
+```
+
+I can't figure out what's wrong with `jags.parallel`.
+It returns this message,
+
+> `Error in get(name, envir = envir) : invalid first argument`
+
+```{r, eval=FALSE}
+M <- jags.parallel(DJags, inits, params, model.file="modelMetaAnalysis.txt")
+```
+
+Show the model output.
+
+```{r}
+M
+plot(M)
+traceplot(M, ask=FALSE, col=rainbow(M$BUGSoutput$n.chains, alpha=1/2))
 ```

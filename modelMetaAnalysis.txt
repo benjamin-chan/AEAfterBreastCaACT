@@ -1,0 +1,15 @@
+
+model
+{
+  for( i in 1 : n ) {
+    z[i] ~ dnorm(0, 1)
+    logit(pInt[i] ) <- alpha + beta + sigma * z[i]
+    logit(pCntl[i]) <- alpha        + sigma * z[i]
+    yInt[i]  ~ dbin(pInt[i] , nInt[i] )
+    yCntl[i] ~ dbin(pCntl[i], nCntl[i])
+  }
+  alpha ~ dnorm(-5.0, 1.0E-1)
+  beta  ~ dnorm(0.0, 1.0E-1)
+  sigma ~ dnorm( 0.5, 1.0E-1) I(0, )
+  # sigma ~ dgamma(0.001, 0.001)
+}
