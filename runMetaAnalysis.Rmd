@@ -12,20 +12,11 @@ Last update: `r paste(Sys.time())`
 R version: `r R.version.string`
 
 
-# Using random-effects model
-
-Load required packages
-
-```{r}
-require(metafor)
-# require(lme4)
-```
-
 Recreate the analysis from Nelson (2009); Screening for Breast Cancer: An Update for the U.S. Preventive Services Task Force; Ann Intern Med. 2009;151:727-737.
 
 Here's the dataset from the figure on page 730.
 
-```{r MakeData}
+```{r}
 study <- c('AGE', 'CNBSS-1', 'HIP', 'Gothenburg', 'Stockholm', 'Malmo', 'Kopparberg', 'Ostergotland')
 yInt   <- c(    105,    105,     64,     34,     34,     53,     22,     31)
 nInt   <- c(  53884,  25214,  13740,  11724,  14303,  13568,   9582,  10285)
@@ -46,9 +37,19 @@ D <- data.frame(study,
 D
 ```
 
+
+# Using random-effects model
+
+Load required packages
+
+```{r}
+require(metafor)
+# require(lme4)
+```
+
 Fit a random effects model for the relative risk.
 
-```{r FitModelRR}
+```{r}
 RR <- rma(measure="RR", data=D, ai=yInt, n1i=nInt, ci=yCntl, n2i=nCntl)
 summary(RR)
 predict(RR, transf=exp)
@@ -74,7 +75,7 @@ forest(RR, slab=study, transf=exp, ref=1)
 
 Fit a random effects model for the relative difference.
 
-```{r FitModelRD}
+```{r}
 RD <- rma(measure="RD", data=D, ai=yInt, n1i=nInt, ci=yCntl, n2i=nCntl)
 summary(RD)
 predict(RD)
@@ -101,18 +102,18 @@ forest(RD, slab=study, digits=4)
 
 # Using JAGS
 
-Load `R2jags`.
+Load `R2jags` and `ggmcmc`.
 
 ```{r}
 require(R2jags, quietly=TRUE)
+require(ggmcmc, quietly=TRUE)
 ```
 
 Specify the model using JAGS syntax.
 Write the model to a text file.
 
 ```{r}
-cat("
-model
+cat("model
 {
   for( i in 1 : n ) {
     z[i] ~ dnorm(0, 1)
@@ -134,7 +135,7 @@ Prepare the data for JAGS.
 `R2jags` requires the data object to be a list.
 
 ```{r}
-DJags <- list(n=nrow(D), yInt=D$yInt, nInt=D$nInt, yCntl=D$yCntl, nCntl=D$nCntl)
+D2 <- list(n=nrow(D), yInt=D$yInt, nInt=D$nInt, yCntl=D$yCntl, nCntl=D$nCntl)
 ```
 
 Initialize the parameters.
@@ -158,7 +159,7 @@ set.seed(as.numeric(as.Date("2014-08-27")))
 Run the model.
 
 ```{r}
-system.time(M <- jags(DJags, inits, params, model.file="modelMetaAnalysis.txt", n.iter=100000))
+system.time(M <- jags(D2, inits, params, model.file="modelMetaAnalysis.txt", n.iter=250E3))
 ```
 
 I can't figure out what's wrong with `jags.parallel`.
@@ -170,17 +171,69 @@ It returns this message,
 M <- jags.parallel(DJags, inits, params, model.file="modelMetaAnalysis.txt")
 ```
 
-Check for convergence.
-The `r M$BUGSoutput$n.chains` MCMC chains should overlap and not diverge.
+Convert the JAGS object to an MCMC object.
+Also, convert the MCMC object to a ggs object.
 
-```{r mcmcConvergence}
+```{r}
 Mmcmc <- as.mcmc(M)
-xyplot(Mmcmc, alpha=1/M$BUGSoutput$n.chains)
+Mggs <- ggs(as.mcmc(M))
 ```
 
-Show the model output.
+Check for convergence.
+
+```{r mcmcConvergence}
+ggs_traceplot(Mggs)
+ggs_autocorrelation(Mggs)
+ggs_compare_partial(Mggs)
+```
+
+**Convergence looks good.**
+So, show the model output.
+
+```{r mcmcPosterior}
+M
+ggs_density(Mggs)
+```
+
+Combine the MCMC chains.
+Calculate some useful output from the model.
+
+```{r}
+Mdf <- rbind(data.frame(chain = 1, Mmcmc[[1]]),
+             data.frame(chain = 2, Mmcmc[[2]]),
+             data.frame(chain = 3, Mmcmc[[3]]))
+scale <- 10000
+Mdf$predInt <- exp(Mdf$alpha + Mdf$beta) / (1 + exp(Mdf$alpha + Mdf$beta))
+Mdf$predCntl <- exp(Mdf$alpha) / (1 + exp(Mdf$alpha))
+Mdf$rateInt <- Mdf$predInt * scale
+Mdf$rateCntl <- Mdf$predCntl * scale
+Mdf$rateDiff <- Mdf$rateInt - Mdf$rateCntl
+```
+
+Summarize.
 
 ```{r mcmcOutput}
-M
-densityplot(Mmcmc)
+Mgg <- melt(Mdf, id.vars=c("chain"), measure.vars=c("rateInt", "rateCntl", "rateDiff"), value.name="rate")
+Mgg$varLabel <- factor(Mgg$variable, labels=c("Intervention", "Control", "Difference"))
+ggplot(Mgg[Mgg$varLabel %in% c("Intervention", "Control"), ], aes(x=rate, fill=varLabel)) +
+  geom_density(alpha=1/2) +
+  scale_x_continuous("Rate per 10,000") +
+  scale_y_continuous("Density") +
+  scale_fill_discrete("")
+ggplot(Mgg[Mgg$varLabel == "Difference", ], aes(x=rate)) +
+  geom_density(alpha=1/2) +
+  scale_x_continuous("Rate difference per 10,000") +
+  scale_y_continuous("Density") +
+  geom_vline(xIntercept = 0)
+```
+
+Save the JAGS objects.
+
+```{r}
+modelJAGS <- list(metadata = list(timestamp = Sys.time(),
+                                  R = R.version.string,
+                                  R2jags = packageVersion("R2jags")),
+                  jags = M,
+                  chains = Mdf)
+save(modelJAGS, file="modelJAGS.RData")
 ```
