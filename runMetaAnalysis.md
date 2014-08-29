@@ -1,45 +1,9 @@
----
-title: "Long term adverse events after breast cancer adjuvant chemotherapy"
-author: "Benjamin Chan"
-output:
-  html_document:
-    toc: true
-    keep_md: true
----
+# Long term adverse events after breast cancer adjuvant chemotherapy
+Benjamin Chan  
 
-Last update: 2014-08-27 22:21:34
+Last update: 2014-08-29 15:57:50
 
-R version: R version 3.0.2 (2013-09-25)
-
-
-# Using random-effects model
-
-Load required packages
-
-
-```r
-require(metafor)
-```
-
-```
-## Loading required package: metafor
-```
-
-```
-## Warning: package 'metafor' was built under R version 3.0.3
-```
-
-```
-## Loading required package: Formula Loading required package: Matrix Loading
-## required package: lattice
-## 
-## Loading 'metafor' package (version 1.9-4). For an overview and
-## introduction to the package please type: help(metafor).
-```
-
-```r
-# require(lme4)
-```
+R version: R version 3.1.1 (2014-07-10)
 
 
 Recreate the analysis from Nelson (2009); Screening for Breast Cancer: An Update for the U.S. Preventive Services Task Force; Ann Intern Med. 2009;151:727-737.
@@ -48,22 +12,23 @@ Here's the dataset from the figure on page 730.
 
 
 ```r
-study <- c("AGE", "CNBSS-1", "HIP", "Gothenburg", "Stockholm", "Malmo", "Kopparberg", 
-    "Ostergotland")
-yInt <- c(105, 105, 64, 34, 34, 53, 22, 31)
-nInt <- c(53884, 25214, 13740, 11724, 14303, 13568, 9582, 10285)
-pyInt <- c(578390, 282606, 192360, NA, 203000, 184000, 124566, 172000)
-yCntl <- c(251, 108, 82, 59, 13, 66, 16, 30)
-nCntl <- c(106956, 25216, 13740, 14217, 8021, 12279, 5031, 10459)
-pyCntl <- c(1149380, 282575, 192360, NA, 117000, 160000, 65403, 176000)
+study <- c('AGE', 'CNBSS-1', 'HIP', 'Gothenburg', 'Stockholm', 'Malmo', 'Kopparberg', 'Ostergotland')
+yInt   <- c(    105,    105,     64,     34,     34,     53,     22,     31)
+nInt   <- c(  53884,  25214,  13740,  11724,  14303,  13568,   9582,  10285)
+pyInt  <- c( 578390, 282606, 192360,     NA, 203000, 184000, 124566, 172000)
+yCntl  <- c(    251,    108,     82,     59,     13,     66,     16,     30)
+nCntl  <- c( 106956,  25216,  13740,  14217,   8021,  12279,   5031,  10459)
+pyCntl <- c(1149380, 282575, 192360,     NA, 117000, 160000,  65403, 176000)
 n <- 10000
-rateInt <- n * yInt/nInt
-rateCntl <- n * yCntl/nCntl
-rr <- rateInt/rateCntl
+rateInt  <- n * yInt  / nInt
+rateCntl <- n * yCntl / nCntl
+rr <- rateInt / rateCntl
 rd <- rateInt - rateCntl
-nns <- 1/((yCntl/nCntl) - (yInt/nInt))
-D <- data.frame(study, yInt, nInt, pyInt, rateInt, yCntl, nCntl, pyCntl, rateCntl, 
-    rr, rd, nns)
+nns <- 1 / ((yCntl / nCntl) - (yInt / nInt))
+D <- data.frame(study,
+                yInt , nInt , pyInt , rateInt ,
+                yCntl, nCntl, pyCntl, rateCntl,
+                rr, rd, nns)
 D
 ```
 
@@ -89,212 +54,79 @@ D
 ```
 
 
-Fit a random effects model for the relative risk.
+# Using random-effects model
 
+**Do not run**
 
-```r
-RR <- rma(measure = "RR", data = D, ai = yInt, n1i = nInt, ci = yCntl, n2i = nCntl)
-summary(RR)
-```
-
-```
-## 
-## Random-Effects Model (k = 8; tau^2 estimator: REML)
-## 
-##   logLik  deviance       AIC       BIC      AICc  
-##   1.3327   -2.6655    1.3345    1.2263    4.3345  
-## 
-## tau^2 (estimated amount of total heterogeneity): 0.0000 (SE = 0.0155)
-## tau (square root of estimated tau^2 value):      0.0005
-## I^2 (total heterogeneity / total variability):   0.00%
-## H^2 (total variability / sampling variability):  1.00
-## 
-## Test for Heterogeneity: 
-## Q(df = 7) = 6.5635, p-val = 0.4757
-## 
-## Model Results:
-## 
-## estimate       se     zval     pval    ci.lb    ci.ub          
-##  -0.1610   0.0634  -2.5408   0.0111  -0.2853  -0.0368        * 
-## 
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-```
-
-```r
-predict(RR, transf = exp)
-```
-
-```
-##    pred  ci.lb  ci.ub  cr.lb  cr.ub
-##  0.8513 0.7518 0.9639 0.7518 0.9639
-```
-
-
-Plot model diagnostics.
-
-
-```r
-plot(RR)
-```
-
-![plot of chunk ModelDiagnosticsRR](figure/ModelDiagnosticsRR.png) 
-
-
-Plot a L'Abbe plot.
-
-
-```r
-labbe(RR)
-```
-
-![plot of chunk LAbbePlotRR](figure/LAbbePlotRR.png) 
-
-
-Plot summary forest plot.
-
-
-```r
-forest(RR, slab = study, transf = exp, ref = 1)
-```
-
-![plot of chunk ForestPlotRR](figure/ForestPlotRR.png) 
-
-
-Fit a random effects model for the relative difference.
-
-
-```r
-RD <- rma(measure = "RD", data = D, ai = yInt, n1i = nInt, ci = yCntl, n2i = nCntl)
-summary(RD)
-```
-
-```
-## 
-## Random-Effects Model (k = 8; tau^2 estimator: REML)
-## 
-##   logLik  deviance       AIC       BIC      AICc  
-##  40.3055  -80.6110  -76.6110  -76.7192  -73.6110  
-## 
-## tau^2 (estimated amount of total heterogeneity): 0.0000 (SE = 0.0000)
-## tau (square root of estimated tau^2 value):      0.0002
-## I^2 (total heterogeneity / total variability):   13.32%
-## H^2 (total variability / sampling variability):  1.15
-## 
-## Test for Heterogeneity: 
-## Q(df = 7) = 8.6738, p-val = 0.2769
-## 
-## Model Results:
-## 
-## estimate       se     zval     pval    ci.lb    ci.ub          
-##  -0.0004   0.0002  -1.8384   0.0660  -0.0008   0.0000        . 
-## 
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-```
-
-```r
-predict(RD)
-```
-
-```
-##     pred     se   ci.lb  ci.ub   cr.lb  cr.ub
-##  -0.0004 0.0002 -0.0008 0.0000 -0.0010 0.0002
-```
-
-
-Plot model diagnostics.
-
-
-```r
-plot(RD)
-```
-
-![plot of chunk ModelDiagnosticsRD](figure/ModelDiagnosticsRD.png) 
-
-
-Plot a L'Abbe plot.
-
-
-```r
-labbe(RD)
-```
-
-![plot of chunk LAbbePlotRD](figure/LAbbePlotRD.png) 
-
-
-Plot summary forest plot.
-
-
-```r
-forest(RD, slab = study, digits = 4)
-```
-
-![plot of chunk ForestPlotRD](figure/ForestPlotRD.png) 
 
 
 
 # Using JAGS
 
-Load `R2jags`.
+
+Load `R2jags` and `ggmcmc`.
 
 
 ```r
-require(R2jags, quietly = TRUE)
-```
-
-```
-## Warning: package 'R2jags' was built under R version 3.0.3 Warning: package
-## 'rjags' was built under R version 3.0.3
+require(R2jags, quietly=TRUE)
 ```
 
 ```
 ## Loading required package: coda
-```
-
-```
-## Warning: package 'coda' was built under R version 3.0.3
-```
-
-```
-## Linked to JAGS 3.4.0 Loaded modules: basemod,bugs
+## Loading required package: lattice
+## Linked to JAGS 3.4.0
+## Loaded modules: basemod,bugs
 ## 
 ## Attaching package: 'R2jags'
 ## 
 ## The following object is masked from 'package:coda':
 ## 
-## traceplot
+##     traceplot
 ```
 
+```r
+require(ggmcmc, quietly=TRUE)
+```
 
 Specify the model using JAGS syntax.
 Write the model to a text file.
 
 
 ```r
-cat("\nmodel\n{\n  for( i in 1 : n ) {\n    z[i] ~ dnorm(0, 1)\n    logit(pInt[i] ) <- alpha + beta + sigma * z[i]\n    logit(pCntl[i]) <- alpha        + sigma * z[i]\n    yInt[i]  ~ dbin(pInt[i] , nInt[i] )\n    yCntl[i] ~ dbin(pCntl[i], nCntl[i])\n  }\n  alpha ~ dnorm(-5.0, 1.0E-1)\n  beta  ~ dnorm(0.0, 1.0E-1)\n  sigma ~ dnorm( 0.5, 1.0E-1) I(0, )\n  # sigma ~ dgamma(0.001, 0.001)\n}\n", 
-    file = "modelMetaAnalysis.txt")
+cat("model
+{
+  # Likelihood
+  for( i in 1 : n ) {
+    z[i] ~ dnorm(0, 1)
+    logit(pInt[i] ) <- alpha + beta + sigma * z[i]
+    logit(pCntl[i]) <- alpha        + sigma * z[i]
+    yInt[i]  ~ dbin(pInt[i] , nInt[i] )
+    yCntl[i] ~ dbin(pCntl[i], nCntl[i])
+  }
+  # Priors
+  alpha ~ dnorm(-5.0, 1.0E-1)
+  beta  ~ dnorm(0.5, 1.0E-1)
+  sigma ~ dnorm( 0.5, 1.0E-1) I(0, )
+  # sigma ~ dgamma(0.001, 0.001)
+}
+",
+file="modelMetaAnalysis.txt")
 ```
-
 
 Prepare the data for JAGS.
 `R2jags` requires the data object to be a list.
 
 
 ```r
-DJags <- list(n = nrow(D), yInt = D$yInt, nInt = D$nInt, yCntl = D$yCntl, nCntl = D$nCntl)
+D2 <- list(n=nrow(D), yInt=D$yInt, nInt=D$nInt, yCntl=D$yCntl, nCntl=D$nCntl)
 ```
-
 
 Initialize the parameters.
 
 
 ```r
-inits <- function() {
-    list(alpha = 0, beta = 0, sigma = 0, z = rep(0, nrow(D)))
-}
+inits <- function() {list("alpha"=0, "beta"=0, "sigma"=0, "z"=rep(0, nrow(D)))}
 ```
-
 
 Specify the parameters to track.
 
@@ -303,7 +135,6 @@ Specify the parameters to track.
 params <- c("alpha", "beta", "sigma")
 ```
 
-
 Set the random number seed.
 
 
@@ -311,13 +142,11 @@ Set the random number seed.
 set.seed(as.numeric(as.Date("2014-08-27")))
 ```
 
-
 Run the model.
 
 
 ```r
-system.time(M <- jags(DJags, inits, params, model.file = "modelMetaAnalysis.txt", 
-    n.iter = 1e+05))
+system.time(M <- jags(D2, inits, params, model.file="modelMetaAnalysis.txt", n.iter=100E3))
 ```
 
 ```
@@ -335,9 +164,8 @@ system.time(M <- jags(DJags, inits, params, model.file = "modelMetaAnalysis.txt"
 
 ```
 ##    user  system elapsed 
-##   19.65    0.03   22.25
+##   21.78    0.01   22.02
 ```
-
 
 I can't figure out what's wrong with `jags.parallel`.
 It returns this message,
@@ -346,23 +174,41 @@ It returns this message,
 
 
 ```r
-M <- jags.parallel(DJags, inits, params, model.file = "modelMetaAnalysis.txt")
+M <- jags.parallel(DJags, inits, params, model.file="modelMetaAnalysis.txt")
 ```
 
-
-Check for convergence.
-The 3 MCMC chains should overlap and not diverge.
+Convert the JAGS object to an MCMC object.
+Also, convert the MCMC object to a ggs object.
 
 
 ```r
 Mmcmc <- as.mcmc(M)
-xyplot(Mmcmc, alpha = 1/M$BUGSoutput$n.chains)
+Mggs <- ggs(as.mcmc(M))
 ```
 
-![plot of chunk mcmcConvergence](figure/mcmcConvergence.png) 
+Check for convergence.
 
 
-Show the model output.
+```r
+ggs_traceplot(Mggs)
+```
+
+![plot of chunk mcmcConvergence](./runMetaAnalysis_files/figure-html/mcmcConvergence1.png) 
+
+```r
+ggs_autocorrelation(Mggs)
+```
+
+![plot of chunk mcmcConvergence](./runMetaAnalysis_files/figure-html/mcmcConvergence2.png) 
+
+```r
+ggs_compare_partial(Mggs)
+```
+
+![plot of chunk mcmcConvergence](./runMetaAnalysis_files/figure-html/mcmcConvergence3.png) 
+
+**Convergence looks good.**
+So, show the model output.
 
 
 ```r
@@ -374,27 +220,80 @@ M
 ##  3 chains, each with 1e+05 iterations (first 50000 discarded), n.thin = 50
 ##  n.sims = 3000 iterations saved
 ##          mu.vect sd.vect    2.5%     25%     50%     75%   97.5%  Rhat
-## alpha     -5.637   0.199  -6.034  -5.746  -5.636  -5.527  -5.251 1.048
-## beta      -0.162   0.065  -0.292  -0.205  -0.161  -0.117  -0.038 1.003
-## sigma      0.507   0.289   0.222   0.327   0.424   0.578   1.340 1.347
-## deviance 107.887   4.215 101.563 104.774 107.256 110.302 117.729 1.004
+## alpha     -5.637   0.166  -5.976  -5.733  -5.634  -5.540  -5.297 1.022
+## beta      -0.158   0.061  -0.277  -0.198  -0.159  -0.120  -0.036 1.002
+## sigma      0.430   0.169   0.229   0.316   0.392   0.496   0.923 1.205
+## deviance 107.851   4.197 101.506 104.791 107.242 110.311 117.804 1.003
 ##          n.eff
-## alpha     3000
-## beta       720
-## sigma       10
-## deviance  2100
+## alpha     2200
+## beta      1600
+## sigma       14
+## deviance   810
 ## 
 ## For each parameter, n.eff is a crude measure of effective sample size,
 ## and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
 ## 
 ## DIC info (using the rule, pD = var(deviance)/2)
-## pD = 8.9 and DIC = 116.8
+## pD = 8.8 and DIC = 116.6
 ## DIC is an estimate of expected predictive error (lower deviance is better).
 ```
 
 ```r
-densityplot(Mmcmc)
+ggs_density(Mggs)
 ```
 
-![plot of chunk mcmcOutput](figure/mcmcOutput.png) 
+![plot of chunk mcmcPosterior](./runMetaAnalysis_files/figure-html/mcmcPosterior.png) 
 
+Combine the MCMC chains.
+Calculate some useful output from the model.
+
+
+```r
+Mdf <- rbind(data.frame(chain = 1, Mmcmc[[1]]),
+             data.frame(chain = 2, Mmcmc[[2]]),
+             data.frame(chain = 3, Mmcmc[[3]]))
+scale <- 10000
+Mdf$predInt <- exp(Mdf$alpha + Mdf$beta) / (1 + exp(Mdf$alpha + Mdf$beta))
+Mdf$predCntl <- exp(Mdf$alpha) / (1 + exp(Mdf$alpha))
+Mdf$rateInt <- Mdf$predInt * scale
+Mdf$rateCntl <- Mdf$predCntl * scale
+Mdf$rateDiff <- Mdf$rateInt - Mdf$rateCntl
+```
+
+Summarize.
+
+
+```r
+Mgg <- melt(Mdf, id.vars=c("chain"), measure.vars=c("rateInt", "rateCntl", "rateDiff"), value.name="rate")
+Mgg$varLabel <- factor(Mgg$variable, labels=c("Intervention", "Control", "Difference"))
+ggplot(Mgg[Mgg$varLabel %in% c("Intervention", "Control"), ], aes(x=rate, fill=varLabel)) +
+  geom_density(alpha=1/2) +
+  scale_x_continuous("Rate per 10,000") +
+  scale_y_continuous("Density") +
+  scale_fill_discrete("")
+```
+
+![plot of chunk mcmcOutput](./runMetaAnalysis_files/figure-html/mcmcOutput1.png) 
+
+```r
+ggplot(Mgg[Mgg$varLabel == "Difference", ], aes(x=rate)) +
+  geom_density(alpha=1/2, fill="grey") +
+  scale_x_continuous("Rate difference per 10,000") +
+  scale_y_continuous("Density") +
+  scale_fill_discrete("") +
+  geom_vline(xIntercept = 0)
+```
+
+![plot of chunk mcmcOutput](./runMetaAnalysis_files/figure-html/mcmcOutput2.png) 
+
+Save the JAGS objects.
+
+
+```r
+modelJAGS <- list(metadata = list(timestamp = Sys.time(),
+                                  R = R.version.string,
+                                  R2jags = packageVersion("R2jags")),
+                  jags = M,
+                  chains = Mdf)
+save(modelJAGS, file="modelJAGS.RData")
+```

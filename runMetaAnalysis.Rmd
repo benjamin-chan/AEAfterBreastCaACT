@@ -40,6 +40,8 @@ D
 
 # Using random-effects model
 
+**Do not run**
+
 ```{r, eval=FALSE, child=c("modelRandomEffects.Rmd")}
 ```
 
