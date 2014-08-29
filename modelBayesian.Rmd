@@ -1,0 +1,135 @@
+Load `R2jags` and `ggmcmc`.
+
+```{r}
+require(R2jags, quietly=TRUE)
+require(ggmcmc, quietly=TRUE)
+```
+
+Specify the model using JAGS syntax.
+Write the model to a text file.
+
+```{r}
+cat("model
+{
+  for( i in 1 : n ) {
+    z[i] ~ dnorm(0, 1)
+    logit(pInt[i] ) <- alpha + beta + sigma * z[i]
+    logit(pCntl[i]) <- alpha        + sigma * z[i]
+    yInt[i]  ~ dbin(pInt[i] , nInt[i] )
+    yCntl[i] ~ dbin(pCntl[i], nCntl[i])
+  }
+  alpha ~ dnorm(-5.0, 1.0E-1)
+  beta  ~ dnorm(0.0, 1.0E-1)
+  sigma ~ dnorm( 0.5, 1.0E-1) I(0, )
+  # sigma ~ dgamma(0.001, 0.001)
+}
+",
+file="modelMetaAnalysis.txt")
+```
+
+Prepare the data for JAGS.
+`R2jags` requires the data object to be a list.
+
+```{r}
+D2 <- list(n=nrow(D), yInt=D$yInt, nInt=D$nInt, yCntl=D$yCntl, nCntl=D$nCntl)
+```
+
+Initialize the parameters.
+
+```{r}
+inits <- function() {list("alpha"=0, "beta"=0, "sigma"=0, "z"=rep(0, nrow(D)))}
+```
+
+Specify the parameters to track.
+
+```{r}
+params <- c("alpha", "beta", "sigma")
+```
+
+Set the random number seed.
+
+```{r}
+set.seed(as.numeric(as.Date("2014-08-27")))
+```
+
+Run the model.
+
+```{r}
+system.time(M <- jags(D2, inits, params, model.file="modelMetaAnalysis.txt", n.iter=250E3))
+```
+
+I can't figure out what's wrong with `jags.parallel`.
+It returns this message,
+
+> `Error in get(name, envir = envir) : invalid first argument`
+
+```{r, eval=FALSE}
+M <- jags.parallel(DJags, inits, params, model.file="modelMetaAnalysis.txt")
+```
+
+Convert the JAGS object to an MCMC object.
+Also, convert the MCMC object to a ggs object.
+
+```{r}
+Mmcmc <- as.mcmc(M)
+Mggs <- ggs(as.mcmc(M))
+```
+
+Check for convergence.
+
+```{r mcmcConvergence}
+ggs_traceplot(Mggs)
+ggs_autocorrelation(Mggs)
+ggs_compare_partial(Mggs)
+```
+
+**Convergence looks good.**
+So, show the model output.
+
+```{r mcmcPosterior}
+M
+ggs_density(Mggs)
+```
+
+Combine the MCMC chains.
+Calculate some useful output from the model.
+
+```{r}
+Mdf <- rbind(data.frame(chain = 1, Mmcmc[[1]]),
+             data.frame(chain = 2, Mmcmc[[2]]),
+             data.frame(chain = 3, Mmcmc[[3]]))
+scale <- 10000
+Mdf$predInt <- exp(Mdf$alpha + Mdf$beta) / (1 + exp(Mdf$alpha + Mdf$beta))
+Mdf$predCntl <- exp(Mdf$alpha) / (1 + exp(Mdf$alpha))
+Mdf$rateInt <- Mdf$predInt * scale
+Mdf$rateCntl <- Mdf$predCntl * scale
+Mdf$rateDiff <- Mdf$rateInt - Mdf$rateCntl
+```
+
+Summarize.
+
+```{r mcmcOutput}
+Mgg <- melt(Mdf, id.vars=c("chain"), measure.vars=c("rateInt", "rateCntl", "rateDiff"), value.name="rate")
+Mgg$varLabel <- factor(Mgg$variable, labels=c("Intervention", "Control", "Difference"))
+ggplot(Mgg[Mgg$varLabel %in% c("Intervention", "Control"), ], aes(x=rate, fill=varLabel)) +
+  geom_density(alpha=1/2) +
+  scale_x_continuous("Rate per 10,000") +
+  scale_y_continuous("Density") +
+  scale_fill_discrete("")
+ggplot(Mgg[Mgg$varLabel == "Difference", ], aes(x=rate)) +
+  geom_density(alpha=1/2) +
+  scale_x_continuous("Rate difference per 10,000") +
+  scale_y_continuous("Density") +
+  geom_vline(xIntercept = 0)
+```
+
+Save the JAGS objects.
+
+```{r}
+modelJAGS <- list(metadata = list(timestamp = Sys.time(),
+                                  R = R.version.string,
+                                  R2jags = packageVersion("R2jags")),
+                  jags = M,
+                  chains = Mdf)
+save(modelJAGS, file="modelJAGS.RData")
+```

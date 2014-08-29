@@ -1,0 +1,59 @@
+Load required packages
+
+```{r}
+require(metafor)
+# require(lme4)
+```
+
+Fit a random effects model for the relative risk.
+
+```{r}
+RR <- rma(measure="RR", data=D, ai=yInt, n1i=nInt, ci=yCntl, n2i=nCntl)
+summary(RR)
+predict(RR, transf=exp)
+```
+
+Plot model diagnostics.
+
+```{r ModelDiagnosticsRR}
+plot(RR)
+```
+
+Plot a L'Abbe plot.
+
+```{r LAbbePlotRR}
+labbe(RR)
+```
+
+Plot summary forest plot.
+
+```{r ForestPlotRR}
+forest(RR, slab=study, transf=exp, ref=1)
+```
+
+Fit a random effects model for the relative difference.
+
+```{r}
+RD <- rma(measure="RD", data=D, ai=yInt, n1i=nInt, ci=yCntl, n2i=nCntl)
+summary(RD)
+predict(RD)
+```
+
+Plot model diagnostics.
+
+```{r ModelDiagnosticsRD}
+plot(RD)
+```
+
+Plot a L'Abbe plot.
+
+```{r LAbbePlotRD}
+labbe(RD)
+```
+
+Plot summary forest plot.
+
+```{r ForestPlotRD}
+forest(RD, slab=study, digits=4)
+```
+
