@@ -108,24 +108,31 @@ Mdf$predCntl <- exp(Mdf$alpha) / (1 + exp(Mdf$alpha))
 Mdf$rateInt <- Mdf$predInt * denominator
 Mdf$rateCntl <- Mdf$predCntl * denominator
 Mdf$rateDiff <- Mdf$rateInt - Mdf$rateCntl
+Mdf$nns <- 1 / (Mdf$predCntl - Mdf$predInt)
 ```
 
 Summarize.
 
 ```{r mcmcOutput}
-Mgg <- melt(Mdf, id.vars=c("chain"), measure.vars=c("rateInt", "rateCntl", "rateDiff"), value.name="rate")
-Mgg$varLabel <- factor(Mgg$variable, labels=c("Intervention", "Control", "Difference"))
-ggplot(Mgg[Mgg$varLabel %in% c("Intervention", "Control"), ], aes(x=rate, fill=varLabel)) +
+Mgg <- melt(Mdf, id.vars=c("chain"), measure.vars=c("rateInt", "rateCntl", "rateDiff", "nns"))
+Mgg$varLabel <- factor(Mgg$variable, labels=c("Intervention", "Control", "Difference", "NNS"))
+ggplot(Mgg[Mgg$varLabel %in% c("Intervention", "Control"), ], aes(x=value, fill=varLabel)) +
   geom_density(alpha=1/2) +
   scale_x_continuous(sprintf("Rate per %s", format(denominator, big.mark=","))) +
   scale_y_continuous("Density") +
   scale_fill_discrete("")
-ggplot(Mgg[Mgg$varLabel == "Difference", ], aes(x=rate)) +
+ggplot(Mgg[Mgg$varLabel == "Difference", ], aes(x=value)) +
   geom_density(alpha=1/2, fill="grey") +
   scale_x_continuous(sprintf("Rate difference per %s", format(denominator, big.mark=","))) +
   scale_y_continuous("Density") +
   scale_fill_discrete("") +
   geom_vline(xIntercept = 0)
+nnsBounds <- quantile(Mgg[Mgg$varLabel == "NNS", "value"], probs=c(0.025, 0.975))
+ggplot(Mgg[Mgg$varLabel == "NNS" & Mgg$value > nnsBounds[1] & Mgg$value < nnsBounds[2], ], aes(x=value)) +
+  geom_density(alpha=1/2, fill="grey") +
+  scale_x_continuous("Number needed to screen") +
+  scale_y_continuous("Density") +
+  scale_fill_discrete("")
 ```
 
 Save the JAGS objects.

@@ -1,7 +1,7 @@
 # Long term adverse events after breast cancer adjuvant chemotherapy
 Benjamin Chan  
 
-Last update: 2014-08-29 20:01:03
+Last update: 2014-08-29 20:27:46
 
 R version: R version 3.1.1 (2014-07-10)
 
@@ -164,7 +164,7 @@ system.time(M <- jags.parallel(D3, inits, params, model.file="modelMetaAnalysis.
 
 ```
 ##    user  system elapsed 
-##    0.03    0.00   31.86
+##    0.05    0.02   32.13
 ```
 
 Convert the JAGS object to an MCMC object.
@@ -210,21 +210,21 @@ M
 ##  3 chains, each with 250000 iterations (first 125000 discarded), n.thin = 125
 ##  n.sims = 3000 iterations saved
 ##          mu.vect sd.vect    2.5%     25%     50%     75%   97.5%  Rhat
-## alpha     -5.631   0.150  -5.927  -5.725  -5.632  -5.540  -5.329 1.002
-## beta      -0.161   0.062  -0.282  -0.203  -0.162  -0.120  -0.035 1.002
-## sigma      0.390   0.129   0.222   0.297   0.363   0.455   0.707 1.032
-## deviance 107.649   4.218 101.363 104.580 107.021 109.953 117.215 1.002
+## alpha     -5.638   0.165  -5.981  -5.739  -5.634  -5.537  -5.308 1.004
+## beta      -0.159   0.063  -0.283  -0.203  -0.161  -0.117  -0.034 1.007
+## sigma      0.433   0.153   0.220   0.325   0.403   0.507   0.815 1.018
+## deviance 107.689   4.094 101.583 104.702 107.041 110.053 116.933 1.004
 ##          n.eff
 ## alpha     3000
-## beta      3000
-## sigma       73
-## deviance  2400
+## beta       410
+## sigma      240
+## deviance   780
 ## 
 ## For each parameter, n.eff is a crude measure of effective sample size,
 ## and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
 ## 
 ## DIC info (using the rule, pD = var(deviance)/2)
-## pD = 8.9 and DIC = 116.5
+## pD = 8.4 and DIC = 116.1
 ## DIC is an estimate of expected predictive error (lower deviance is better).
 ```
 
@@ -247,15 +247,16 @@ Mdf$predCntl <- exp(Mdf$alpha) / (1 + exp(Mdf$alpha))
 Mdf$rateInt <- Mdf$predInt * denominator
 Mdf$rateCntl <- Mdf$predCntl * denominator
 Mdf$rateDiff <- Mdf$rateInt - Mdf$rateCntl
+Mdf$nns <- 1 / (Mdf$predCntl - Mdf$predInt)
 ```
 
 Summarize.
 
 
 ```r
-Mgg <- melt(Mdf, id.vars=c("chain"), measure.vars=c("rateInt", "rateCntl", "rateDiff"), value.name="rate")
-Mgg$varLabel <- factor(Mgg$variable, labels=c("Intervention", "Control", "Difference"))
-ggplot(Mgg[Mgg$varLabel %in% c("Intervention", "Control"), ], aes(x=rate, fill=varLabel)) +
+Mgg <- melt(Mdf, id.vars=c("chain"), measure.vars=c("rateInt", "rateCntl", "rateDiff", "nns"))
+Mgg$varLabel <- factor(Mgg$variable, labels=c("Intervention", "Control", "Difference", "NNS"))
+ggplot(Mgg[Mgg$varLabel %in% c("Intervention", "Control"), ], aes(x=value, fill=varLabel)) +
   geom_density(alpha=1/2) +
   scale_x_continuous(sprintf("Rate per %s", format(denominator, big.mark=","))) +
   scale_y_continuous("Density") +
@@ -265,7 +266,7 @@ ggplot(Mgg[Mgg$varLabel %in% c("Intervention", "Control"), ], aes(x=rate, fill=v
 ![plot of chunk mcmcOutput](./runMetaAnalysis_files/figure-html/mcmcOutput1.png) 
 
 ```r
-ggplot(Mgg[Mgg$varLabel == "Difference", ], aes(x=rate)) +
+ggplot(Mgg[Mgg$varLabel == "Difference", ], aes(x=value)) +
   geom_density(alpha=1/2, fill="grey") +
   scale_x_continuous(sprintf("Rate difference per %s", format(denominator, big.mark=","))) +
   scale_y_continuous("Density") +
@@ -274,6 +275,17 @@ ggplot(Mgg[Mgg$varLabel == "Difference", ], aes(x=rate)) +
 ```
 
 ![plot of chunk mcmcOutput](./runMetaAnalysis_files/figure-html/mcmcOutput2.png) 
+
+```r
+nnsBounds <- quantile(Mgg[Mgg$varLabel == "NNS", "value"], probs=c(0.025, 0.975))
+ggplot(Mgg[Mgg$varLabel == "NNS" & Mgg$value > nnsBounds[1] & Mgg$value < nnsBounds[2], ], aes(x=value)) +
+  geom_density(alpha=1/2, fill="grey") +
+  scale_x_continuous("Number needed to screen") +
+  scale_y_continuous("Density") +
+  scale_fill_discrete("")
+```
+
+![plot of chunk mcmcOutput](./runMetaAnalysis_files/figure-html/mcmcOutput3.png) 
 
 Save the JAGS objects.
 
