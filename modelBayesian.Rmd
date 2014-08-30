@@ -39,7 +39,8 @@ D2 <- list(n=nrow(D), yInt=D$yInt, nInt=D$nInt, yCntl=D$yCntl, nCntl=D$nCntl)
 Initialize the parameters.
 
 ```{r}
-inits <- function() {list("alpha"=0, "beta"=0, "sigma"=0, "z"=rep(0, nrow(D)))}
+# inits <- function() {list("alpha"=rnorm(1), "beta"=rnorm(1), "sigma"=runif(1), "z"=rnorm(nrow(D)))}
+inits <- NULL
 ```
 
 Specify the parameters to track.
@@ -55,18 +56,20 @@ set.seed(as.numeric(as.Date("2014-08-27")))
 ```
 
 Run the model.
-
-```{r}
-system.time(M <- jags(D2, inits, params, model.file="modelMetaAnalysis.txt", n.iter=100E3))
-```
-
-I can't figure out what's wrong with `jags.parallel`.
-It returns this message,
-
-> `Error in get(name, envir = envir) : invalid first argument`
+**Don't use `jags()`.**
 
 ```{r, eval=FALSE}
-M <- jags.parallel(DJags, inits, params, model.file="modelMetaAnalysis.txt")
+system.time(M <- jags(D2, inits, params, model.file="modelMetaAnalysis.txt", n.iter=250E3))
+```
+
+**Use `jags.parallel()` instead;** it's faster.
+`jags.parallel` requires some counterintuitive specification.
+See this tip on [Stackoverflow](http://stackoverflow.com/a/20156127).
+
+```{r}
+n <- nrow(D)
+D3 <- list("n", "yInt", "nInt", "yCntl", "nCntl")
+system.time(M <- jags.parallel(D3, inits, params, model.file="modelMetaAnalysis.txt", n.chains=3, n.iter=250E3))
 ```
 
 Convert the JAGS object to an MCMC object.
@@ -100,11 +103,10 @@ Calculate some useful output from the model.
 Mdf <- rbind(data.frame(chain = 1, Mmcmc[[1]]),
              data.frame(chain = 2, Mmcmc[[2]]),
              data.frame(chain = 3, Mmcmc[[3]]))
-scale <- 10000
 Mdf$predInt <- exp(Mdf$alpha + Mdf$beta) / (1 + exp(Mdf$alpha + Mdf$beta))
 Mdf$predCntl <- exp(Mdf$alpha) / (1 + exp(Mdf$alpha))
-Mdf$rateInt <- Mdf$predInt * scale
-Mdf$rateCntl <- Mdf$predCntl * scale
+Mdf$rateInt <- Mdf$predInt * denominator
+Mdf$rateCntl <- Mdf$predCntl * denominator
 Mdf$rateDiff <- Mdf$rateInt - Mdf$rateCntl
 ```
 
@@ -115,12 +117,12 @@ Mgg <- melt(Mdf, id.vars=c("chain"), measure.vars=c("rateInt", "rateCntl", "rate
 Mgg$varLabel <- factor(Mgg$variable, labels=c("Intervention", "Control", "Difference"))
 ggplot(Mgg[Mgg$varLabel %in% c("Intervention", "Control"), ], aes(x=rate, fill=varLabel)) +
   geom_density(alpha=1/2) +
-  scale_x_continuous("Rate per 10,000") +
+  scale_x_continuous(sprintf("Rate per %s", format(denominator, big.mark=","))) +
   scale_y_continuous("Density") +
   scale_fill_discrete("")
 ggplot(Mgg[Mgg$varLabel == "Difference", ], aes(x=rate)) +
   geom_density(alpha=1/2, fill="grey") +
-  scale_x_continuous("Rate difference per 10,000") +
+  scale_x_continuous(sprintf("Rate difference per %s", format(denominator, big.mark=","))) +
   scale_y_continuous("Density") +
   scale_fill_discrete("") +
   geom_vline(xIntercept = 0)

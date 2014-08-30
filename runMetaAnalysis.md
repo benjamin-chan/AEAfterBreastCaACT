@@ -1,7 +1,7 @@
 # Long term adverse events after breast cancer adjuvant chemotherapy
 Benjamin Chan  
 
-Last update: 2014-08-29 15:57:50
+Last update: 2014-08-29 20:01:03
 
 R version: R version 3.1.1 (2014-07-10)
 
@@ -19,9 +19,9 @@ pyInt  <- c( 578390, 282606, 192360,     NA, 203000, 184000, 124566, 172000)
 yCntl  <- c(    251,    108,     82,     59,     13,     66,     16,     30)
 nCntl  <- c( 106956,  25216,  13740,  14217,   8021,  12279,   5031,  10459)
 pyCntl <- c(1149380, 282575, 192360,     NA, 117000, 160000,  65403, 176000)
-n <- 10000
-rateInt  <- n * yInt  / nInt
-rateCntl <- n * yCntl / nCntl
+denominator <- 10000
+rateInt  <- denominator * yInt  / nInt
+rateCntl <- denominator * yCntl / nCntl
 rr <- rateInt / rateCntl
 rd <- rateInt - rateCntl
 nns <- 1 / ((yCntl / nCntl) - (yInt / nInt))
@@ -125,7 +125,8 @@ Initialize the parameters.
 
 
 ```r
-inits <- function() {list("alpha"=0, "beta"=0, "sigma"=0, "z"=rep(0, nrow(D)))}
+# inits <- function() {list("alpha"=rnorm(1), "beta"=rnorm(1), "sigma"=runif(1), "z"=rnorm(nrow(D)))}
+inits <- NULL
 ```
 
 Specify the parameters to track.
@@ -143,38 +144,27 @@ set.seed(as.numeric(as.Date("2014-08-27")))
 ```
 
 Run the model.
+**Don't use `jags()`.**
 
 
 ```r
-system.time(M <- jags(D2, inits, params, model.file="modelMetaAnalysis.txt", n.iter=100E3))
+system.time(M <- jags(D2, inits, params, model.file="modelMetaAnalysis.txt", n.iter=250E3))
 ```
 
-```
-## module glm loaded
-```
+**Use `jags.parallel()` instead;** it's faster.
+`jags.parallel` requires some counterintuitive specification.
+See this tip on [Stackoverflow](http://stackoverflow.com/a/20156127).
 
-```
-## Compiling model graph
-##    Resolving undeclared variables
-##    Allocating nodes
-##    Graph Size: 90
-## 
-## Initializing model
+
+```r
+n <- nrow(D)
+D3 <- list("n", "yInt", "nInt", "yCntl", "nCntl")
+system.time(M <- jags.parallel(D3, inits, params, model.file="modelMetaAnalysis.txt", n.chains=3, n.iter=250E3))
 ```
 
 ```
 ##    user  system elapsed 
-##   21.78    0.01   22.02
-```
-
-I can't figure out what's wrong with `jags.parallel`.
-It returns this message,
-
-> `Error in get(name, envir = envir) : invalid first argument`
-
-
-```r
-M <- jags.parallel(DJags, inits, params, model.file="modelMetaAnalysis.txt")
+##    0.03    0.00   31.86
 ```
 
 Convert the JAGS object to an MCMC object.
@@ -217,24 +207,24 @@ M
 
 ```
 ## Inference for Bugs model at "modelMetaAnalysis.txt", fit using jags,
-##  3 chains, each with 1e+05 iterations (first 50000 discarded), n.thin = 50
+##  3 chains, each with 250000 iterations (first 125000 discarded), n.thin = 125
 ##  n.sims = 3000 iterations saved
 ##          mu.vect sd.vect    2.5%     25%     50%     75%   97.5%  Rhat
-## alpha     -5.637   0.166  -5.976  -5.733  -5.634  -5.540  -5.297 1.022
-## beta      -0.158   0.061  -0.277  -0.198  -0.159  -0.120  -0.036 1.002
-## sigma      0.430   0.169   0.229   0.316   0.392   0.496   0.923 1.205
-## deviance 107.851   4.197 101.506 104.791 107.242 110.311 117.804 1.003
+## alpha     -5.631   0.150  -5.927  -5.725  -5.632  -5.540  -5.329 1.002
+## beta      -0.161   0.062  -0.282  -0.203  -0.162  -0.120  -0.035 1.002
+## sigma      0.390   0.129   0.222   0.297   0.363   0.455   0.707 1.032
+## deviance 107.649   4.218 101.363 104.580 107.021 109.953 117.215 1.002
 ##          n.eff
-## alpha     2200
-## beta      1600
-## sigma       14
-## deviance   810
+## alpha     3000
+## beta      3000
+## sigma       73
+## deviance  2400
 ## 
 ## For each parameter, n.eff is a crude measure of effective sample size,
 ## and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
 ## 
 ## DIC info (using the rule, pD = var(deviance)/2)
-## pD = 8.8 and DIC = 116.6
+## pD = 8.9 and DIC = 116.5
 ## DIC is an estimate of expected predictive error (lower deviance is better).
 ```
 
@@ -252,11 +242,10 @@ Calculate some useful output from the model.
 Mdf <- rbind(data.frame(chain = 1, Mmcmc[[1]]),
              data.frame(chain = 2, Mmcmc[[2]]),
              data.frame(chain = 3, Mmcmc[[3]]))
-scale <- 10000
 Mdf$predInt <- exp(Mdf$alpha + Mdf$beta) / (1 + exp(Mdf$alpha + Mdf$beta))
 Mdf$predCntl <- exp(Mdf$alpha) / (1 + exp(Mdf$alpha))
-Mdf$rateInt <- Mdf$predInt * scale
-Mdf$rateCntl <- Mdf$predCntl * scale
+Mdf$rateInt <- Mdf$predInt * denominator
+Mdf$rateCntl <- Mdf$predCntl * denominator
 Mdf$rateDiff <- Mdf$rateInt - Mdf$rateCntl
 ```
 
@@ -268,7 +257,7 @@ Mgg <- melt(Mdf, id.vars=c("chain"), measure.vars=c("rateInt", "rateCntl", "rate
 Mgg$varLabel <- factor(Mgg$variable, labels=c("Intervention", "Control", "Difference"))
 ggplot(Mgg[Mgg$varLabel %in% c("Intervention", "Control"), ], aes(x=rate, fill=varLabel)) +
   geom_density(alpha=1/2) +
-  scale_x_continuous("Rate per 10,000") +
+  scale_x_continuous(sprintf("Rate per %s", format(denominator, big.mark=","))) +
   scale_y_continuous("Density") +
   scale_fill_discrete("")
 ```
@@ -278,7 +267,7 @@ ggplot(Mgg[Mgg$varLabel %in% c("Intervention", "Control"), ], aes(x=rate, fill=v
 ```r
 ggplot(Mgg[Mgg$varLabel == "Difference", ], aes(x=rate)) +
   geom_density(alpha=1/2, fill="grey") +
-  scale_x_continuous("Rate difference per 10,000") +
+  scale_x_continuous(sprintf("Rate difference per %s", format(denominator, big.mark=","))) +
   scale_y_continuous("Density") +
   scale_fill_discrete("") +
   geom_vline(xIntercept = 0)

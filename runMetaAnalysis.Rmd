@@ -24,9 +24,9 @@ pyInt  <- c( 578390, 282606, 192360,     NA, 203000, 184000, 124566, 172000)
 yCntl  <- c(    251,    108,     82,     59,     13,     66,     16,     30)
 nCntl  <- c( 106956,  25216,  13740,  14217,   8021,  12279,   5031,  10459)
 pyCntl <- c(1149380, 282575, 192360,     NA, 117000, 160000,  65403, 176000)
-n <- 10000
-rateInt  <- n * yInt  / nInt
-rateCntl <- n * yCntl / nCntl
+denominator <- 10000
+rateInt  <- denominator * yInt  / nInt
+rateCntl <- denominator * yCntl / nCntl
 rr <- rateInt / rateCntl
 rd <- rateInt - rateCntl
 nns <- 1 / ((yCntl / nCntl) - (yInt / nInt))
