@@ -9,8 +9,8 @@ model
     yCntl[i] ~ dbin(pCntl[i], nCntl[i])
   }
   # Priors
-  alpha ~ dnorm(-5.0, 1.0E-1)
-  beta  ~ dnorm(0.5, 1.0E-1)
-  sigma ~ dnorm( 0.5, 1.0E-1) I(0, )
+  alpha ~ dnorm(0, 1.0E-1)
+  beta  ~ dnorm(0, 1.0E-1)
+  sigma ~ dnorm(1, 1.0E-1) I(0, )
   # sigma ~ dgamma(0.001, 0.001)
 }

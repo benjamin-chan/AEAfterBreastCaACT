@@ -9,40 +9,28 @@ output:
 
 Last update: `r paste(Sys.time())`
 
-R version: `r R.version.string`
+`r R.version.string`
 
 
-Recreate the analysis from Nelson (2009); Screening for Breast Cancer: An Update for the U.S. Preventive Services Task Force; Ann Intern Med. 2009;151:727-737.
+Recreate the analysis from [Mishanina](http://www.ncbi.nlm.nih.gov/pubmed/24778358) (2014); Use of labour induction and risk of cesarean delivery: a systematic review and meta-analysis.; CMAJ. 2014 Jun 10;186(9):665-73. doi: 10.503/cmaj.130925. Epub 2014 Apr 28. Review. PMID: 24778358
 
-Here's the dataset from the figure on page 730.
+The data is from [Appendix 5](http://www.cmaj.ca/content/suppl/2014/04/28/cmaj.130925.DC1/labour-khan-appendix_5.pdf).
 
 ```{r}
-study <- c('AGE', 'CNBSS-1', 'HIP', 'Gothenburg', 'Stockholm', 'Malmo', 'Kopparberg', 'Ostergotland')
-yInt   <- c(    105,    105,     64,     34,     34,     53,     22,     31)
-nInt   <- c(  53884,  25214,  13740,  11724,  14303,  13568,   9582,  10285)
-pyInt  <- c( 578390, 282606, 192360,     NA, 203000, 184000, 124566, 172000)
-yCntl  <- c(    251,    108,     82,     59,     13,     66,     16,     30)
-nCntl  <- c( 106956,  25216,  13740,  14217,   8021,  12279,   5031,  10459)
-pyCntl <- c(1149380, 282575, 192360,     NA, 117000, 160000,  65403, 176000)
-denominator <- 10000
-rateInt  <- denominator * yInt  / nInt
-rateCntl <- denominator * yCntl / nCntl
-rr <- rateInt / rateCntl
-rd <- rateInt - rateCntl
-nns <- 1 / ((yCntl / nCntl) - (yInt / nInt))
-D <- data.frame(study,
-                yInt , nInt , pyInt , rateInt ,
-                yCntl, nCntl, pyCntl, rateCntl,
-                rr, rd, nns)
-D
+D <- read.csv("labour-khan-appendix_5.csv", header=FALSE)
+names(D) <- c("study", "yInt", "nInt", "yCntl", "nCntl")
+denominator <- 1000
+D$rateInt  <- denominator * D$yInt  / D$nInt
+D$rateCntl <- denominator * D$yCntl / D$nCntl
+D$rr <- D$rateInt / D$rateCntl
+D$rd <- D$rateInt -D$rateCntl
+head(D)
 ```
 
 
 # Using random-effects model
 
-**Do not run**
-
-```{r, eval=FALSE, child=c("modelRandomEffects.Rmd")}
+```{r, eval=TRUE, child=c("modelRandomEffects.Rmd")}
 ```
 
 

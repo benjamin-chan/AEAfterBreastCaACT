@@ -20,9 +20,9 @@ cat("model
     yCntl[i] ~ dbin(pCntl[i], nCntl[i])
   }
   # Priors
-  alpha ~ dnorm(-5.0, 1.0E-1)
-  beta  ~ dnorm(0.5, 1.0E-1)
-  sigma ~ dnorm( 0.5, 1.0E-1) I(0, )
+  alpha ~ dnorm(0, 1.0E-1)
+  beta  ~ dnorm(0, 1.0E-1)
+  sigma ~ dnorm(1, 1.0E-1) I(0, )
   # sigma ~ dgamma(0.001, 0.001)
 }
 ",
@@ -56,10 +56,10 @@ set.seed(as.numeric(as.Date("2014-08-27")))
 ```
 
 Run the model.
-**Don't use `jags()`.**
+**Don't use `jags()`;** it's slow.
 
 ```{r, eval=FALSE}
-system.time(M <- jags(D2, inits, params, model.file="modelMetaAnalysis.txt", n.iter=250E3))
+system.time(M <- jags(D2, inits, params, model.file="modelMetaAnalysis.txt", n.iter=30E3))
 ```
 
 **Use `jags.parallel()` instead;** it's faster.
@@ -68,8 +68,12 @@ See this tip on [Stackoverflow](http://stackoverflow.com/a/20156127).
 
 ```{r}
 n <- nrow(D)
+yInt <- D$yInt
+nInt <- D$nInt
+yCntl <- D$yCntl
+nCntl <- D$nCntl
 D3 <- list("n", "yInt", "nInt", "yCntl", "nCntl")
-system.time(M <- jags.parallel(D3, inits, params, model.file="modelMetaAnalysis.txt", n.chains=3, n.iter=250E3))
+system.time(M <- jags.parallel(D3, inits, params, model.file="modelMetaAnalysis.txt", n.chains=3, n.iter=30E3))
 ```
 
 Convert the JAGS object to an MCMC object.
@@ -127,12 +131,6 @@ ggplot(Mgg[Mgg$varLabel == "Difference", ], aes(x=value)) +
   scale_y_continuous("Density") +
   scale_fill_discrete("") +
   geom_vline(xIntercept = 0)
-nnsBounds <- quantile(Mgg[Mgg$varLabel == "NNS", "value"], probs=c(0.025, 0.975))
-ggplot(Mgg[Mgg$varLabel == "NNS" & Mgg$value > nnsBounds[1] & Mgg$value < nnsBounds[2], ], aes(x=value)) +
-  geom_density(alpha=1/2, fill="grey") +
-  scale_x_continuous("Number needed to screen") +
-  scale_y_continuous("Density") +
-  scale_fill_discrete("")
 ```
 
 Save the JAGS objects.

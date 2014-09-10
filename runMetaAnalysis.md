@@ -1,63 +1,196 @@
 # Long term adverse events after breast cancer adjuvant chemotherapy
 Benjamin Chan  
 
-Last update: 2014-08-29 20:27:46
+Last update: 2014-09-10 11:07:33
 
-R version: R version 3.1.1 (2014-07-10)
+R version 3.1.1 (2014-07-10)
 
 
-Recreate the analysis from Nelson (2009); Screening for Breast Cancer: An Update for the U.S. Preventive Services Task Force; Ann Intern Med. 2009;151:727-737.
+Recreate the analysis from [Mishanina](http://www.ncbi.nlm.nih.gov/pubmed/24778358) (2014); Use of labour induction and risk of cesarean delivery: a systematic review and meta-analysis.; CMAJ. 2014 Jun 10;186(9):665-73. doi: 10.503/cmaj.130925. Epub 2014 Apr 28. Review. PMID: 24778358
 
-Here's the dataset from the figure on page 730.
+The data is from [Appendix 5](http://www.cmaj.ca/content/suppl/2014/04/28/cmaj.130925.DC1/labour-khan-appendix_5.pdf).
 
 
 ```r
-study <- c('AGE', 'CNBSS-1', 'HIP', 'Gothenburg', 'Stockholm', 'Malmo', 'Kopparberg', 'Ostergotland')
-yInt   <- c(    105,    105,     64,     34,     34,     53,     22,     31)
-nInt   <- c(  53884,  25214,  13740,  11724,  14303,  13568,   9582,  10285)
-pyInt  <- c( 578390, 282606, 192360,     NA, 203000, 184000, 124566, 172000)
-yCntl  <- c(    251,    108,     82,     59,     13,     66,     16,     30)
-nCntl  <- c( 106956,  25216,  13740,  14217,   8021,  12279,   5031,  10459)
-pyCntl <- c(1149380, 282575, 192360,     NA, 117000, 160000,  65403, 176000)
-denominator <- 10000
-rateInt  <- denominator * yInt  / nInt
-rateCntl <- denominator * yCntl / nCntl
-rr <- rateInt / rateCntl
-rd <- rateInt - rateCntl
-nns <- 1 / ((yCntl / nCntl) - (yInt / nInt))
-D <- data.frame(study,
-                yInt , nInt , pyInt , rateInt ,
-                yCntl, nCntl, pyCntl, rateCntl,
-                rr, rd, nns)
-D
+D <- read.csv("labour-khan-appendix_5.csv", header=FALSE)
+names(D) <- c("study", "yInt", "nInt", "yCntl", "nCntl")
+denominator <- 1000
+D$rateInt  <- denominator * D$yInt  / D$nInt
+D$rateCntl <- denominator * D$yCntl / D$nCntl
+D$rr <- D$rateInt / D$rateCntl
+D$rd <- D$rateInt -D$rateCntl
+head(D)
 ```
 
 ```
-##          study yInt  nInt  pyInt rateInt yCntl  nCntl  pyCntl rateCntl
-## 1          AGE  105 53884 578390   19.49   251 106956 1149380    23.47
-## 2      CNBSS-1  105 25214 282606   41.64   108  25216  282575    42.83
-## 3          HIP   64 13740 192360   46.58    82  13740  192360    59.68
-## 4   Gothenburg   34 11724     NA   29.00    59  14217      NA    41.50
-## 5    Stockholm   34 14303 203000   23.77    13   8021  117000    16.21
-## 6        Malmo   53 13568 184000   39.06    66  12279  160000    53.75
-## 7   Kopparberg   22  9582 124566   22.96    16   5031   65403    31.80
-## 8 Ostergotland   31 10285 172000   30.14    30  10459  176000    28.68
-##       rr      rd     nns
-## 1 0.8303  -3.981  2511.7
-## 2 0.9723  -1.186  8428.7
-## 3 0.7805 -13.100   763.3
-## 4 0.6988 -12.499   800.0
-## 5 1.4667   7.564 -1322.1
-## 6 0.7267 -14.688   680.8
-## 7 0.7219  -8.843  1130.8
-## 8 1.0508   1.458 -6860.8
+##                study yInt nInt yCntl nCntl rateInt rateCntl     rr      rd
+## 1         Akyol 1999   10   52    21    74  192.31   283.78 0.6777  -91.48
+## 2       Al Malt 1995   12   49    12    54  244.90   222.22 1.1020   22.68
+## 3       Alcalay 1996    3   74     2    80   40.54    25.00 1.6216   15.54
+## 4 AlcosebaÂ·Lim 1992    4   65     3    65   61.54    46.15 1.3333   15.38
+## 5        Allott 1993    4   99     5    96   40.40    52.08 0.7758  -11.68
+## 6         Asher 2009   10   59    12    30  169.49   400.00 0.4237 -230.51
 ```
 
 
 # Using random-effects model
 
-**Do not run**
 
+Load required packages
+
+
+```r
+require(metafor)
+```
+
+```
+## Loading required package: metafor
+## Loading required package: Formula
+## Loading required package: Matrix
+## 
+## Loading 'metafor' package (version 1.9-4). For an overview 
+## and introduction to the package please type: help(metafor).
+```
+
+```r
+# require(lme4)
+```
+
+Fit a random effects model for the relative risk.
+
+
+```r
+RR <- rma(measure="RR", data=D, ai=yInt, n1i=nInt, ci=yCntl, n2i=nCntl)
+summary(RR)
+```
+
+```
+## 
+## Random-Effects Model (k = 157; tau^2 estimator: REML)
+## 
+##    logLik   deviance        AIC        BIC       AICc  
+## -103.6410   207.2819   211.2819   217.3816   211.3603  
+## 
+## tau^2 (estimated amount of total heterogeneity): 0 (SE = 0.0048)
+## tau (square root of estimated tau^2 value):      0
+## I^2 (total heterogeneity / total variability):   0.00%
+## H^2 (total variability / sampling variability):  1.00
+## 
+## Test for Heterogeneity: 
+## Q(df = 156) = 145.9174, p-val = 0.7073
+## 
+## Model Results:
+## 
+## estimate       se     zval     pval    ci.lb    ci.ub          
+##  -0.1247   0.0254  -4.9032   <.0001  -0.1746  -0.0749      *** 
+## 
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+```r
+predict(RR, transf=exp)
+```
+
+```
+##    pred  ci.lb  ci.ub  cr.lb  cr.ub
+##  0.8828 0.8398 0.9279 0.8398 0.9279
+```
+
+Plot model diagnostics.
+
+
+```r
+plot(RR)
+```
+
+![plot of chunk ModelDiagnosticsRR](./runMetaAnalysis_files/figure-html/ModelDiagnosticsRR.png) 
+
+Plot a L'Abbe plot.
+
+
+```r
+labbe(RR)
+```
+
+![plot of chunk LAbbePlotRR](./runMetaAnalysis_files/figure-html/LAbbePlotRR.png) 
+
+Plot summary forest plot.
+
+
+```r
+forest(RR, slab=D$study, atransf=exp, ref=1)
+```
+
+![plot of chunk ForestPlotRR](./runMetaAnalysis_files/figure-html/ForestPlotRR.png) 
+
+Fit a random effects model for the relative difference.
+
+
+```r
+RD <- rma(measure="RD", data=D, ai=yInt, n1i=nInt, ci=yCntl, n2i=nCntl)
+summary(RD)
+```
+
+```
+## 
+## Random-Effects Model (k = 157; tau^2 estimator: REML)
+## 
+##    logLik   deviance        AIC        BIC       AICc  
+##  192.0801  -384.1603  -380.1603  -374.0606  -380.0819  
+## 
+## tau^2 (estimated amount of total heterogeneity): 0.0001 (SE = 0.0002)
+## tau (square root of estimated tau^2 value):      0.0121
+## I^2 (total heterogeneity / total variability):   7.59%
+## H^2 (total variability / sampling variability):  1.08
+## 
+## Test for Heterogeneity: 
+## Q(df = 156) = 185.9364, p-val = 0.0511
+## 
+## Model Results:
+## 
+## estimate       se     zval     pval    ci.lb    ci.ub          
+##  -0.0130   0.0039  -3.3533   0.0008  -0.0206  -0.0054      *** 
+## 
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+```r
+predict(RD)
+```
+
+```
+##     pred     se   ci.lb   ci.ub   cr.lb  cr.ub
+##  -0.0130 0.0039 -0.0206 -0.0054 -0.0379 0.0119
+```
+
+Plot model diagnostics.
+
+
+```r
+plot(RD)
+```
+
+![plot of chunk ModelDiagnosticsRD](./runMetaAnalysis_files/figure-html/ModelDiagnosticsRD.png) 
+
+Plot a L'Abbe plot.
+
+
+```r
+labbe(RD)
+```
+
+![plot of chunk LAbbePlotRD](./runMetaAnalysis_files/figure-html/LAbbePlotRD.png) 
+
+Plot summary forest plot.
+
+
+```r
+forest(RD, slab=D$study, digits=4)
+```
+
+![plot of chunk ForestPlotRD](./runMetaAnalysis_files/figure-html/ForestPlotRD.png) 
 
 
 
@@ -104,9 +237,9 @@ cat("model
     yCntl[i] ~ dbin(pCntl[i], nCntl[i])
   }
   # Priors
-  alpha ~ dnorm(-5.0, 1.0E-1)
-  beta  ~ dnorm(0.5, 1.0E-1)
-  sigma ~ dnorm( 0.5, 1.0E-1) I(0, )
+  alpha ~ dnorm(0, 1.0E-1)
+  beta  ~ dnorm(0, 1.0E-1)
+  sigma ~ dnorm(1, 1.0E-1) I(0, )
   # sigma ~ dgamma(0.001, 0.001)
 }
 ",
@@ -144,11 +277,11 @@ set.seed(as.numeric(as.Date("2014-08-27")))
 ```
 
 Run the model.
-**Don't use `jags()`.**
+**Don't use `jags()`;** it's slow.
 
 
 ```r
-system.time(M <- jags(D2, inits, params, model.file="modelMetaAnalysis.txt", n.iter=250E3))
+system.time(M <- jags(D2, inits, params, model.file="modelMetaAnalysis.txt", n.iter=30E3))
 ```
 
 **Use `jags.parallel()` instead;** it's faster.
@@ -158,13 +291,17 @@ See this tip on [Stackoverflow](http://stackoverflow.com/a/20156127).
 
 ```r
 n <- nrow(D)
+yInt <- D$yInt
+nInt <- D$nInt
+yCntl <- D$yCntl
+nCntl <- D$nCntl
 D3 <- list("n", "yInt", "nInt", "yCntl", "nCntl")
-system.time(M <- jags.parallel(D3, inits, params, model.file="modelMetaAnalysis.txt", n.chains=3, n.iter=250E3))
+system.time(M <- jags.parallel(D3, inits, params, model.file="modelMetaAnalysis.txt", n.chains=3, n.iter=30E3))
 ```
 
 ```
 ##    user  system elapsed 
-##    0.05    0.02   32.13
+##    0.01    0.02   49.07
 ```
 
 Convert the JAGS object to an MCMC object.
@@ -207,24 +344,24 @@ M
 
 ```
 ## Inference for Bugs model at "modelMetaAnalysis.txt", fit using jags,
-##  3 chains, each with 250000 iterations (first 125000 discarded), n.thin = 125
+##  3 chains, each with 30000 iterations (first 15000 discarded), n.thin = 15
 ##  n.sims = 3000 iterations saved
-##          mu.vect sd.vect    2.5%     25%     50%     75%   97.5%  Rhat
-## alpha     -5.638   0.165  -5.981  -5.739  -5.634  -5.537  -5.308 1.004
-## beta      -0.159   0.063  -0.283  -0.203  -0.161  -0.117  -0.034 1.007
-## sigma      0.433   0.153   0.220   0.325   0.403   0.507   0.815 1.018
-## deviance 107.689   4.094 101.583 104.702 107.041 110.053 116.933 1.004
-##          n.eff
-## alpha     3000
-## beta       410
-## sigma      240
-## deviance   780
+##           mu.vect sd.vect     2.5%      25%      50%      75%    97.5%
+## alpha      -1.665   0.074   -1.810   -1.715   -1.665   -1.614   -1.522
+## beta       -0.161   0.032   -0.223   -0.183   -0.161   -0.139   -0.099
+## sigma       0.845   0.058    0.739    0.806    0.842    0.881    0.969
+## deviance 1482.786  17.807 1450.105 1470.659 1481.967 1494.005 1519.831
+##           Rhat n.eff
+## alpha    1.001  2900
+## beta     1.001  2500
+## sigma    1.003  1200
+## deviance 1.001  3000
 ## 
 ## For each parameter, n.eff is a crude measure of effective sample size,
 ## and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
 ## 
 ## DIC info (using the rule, pD = var(deviance)/2)
-## pD = 8.4 and DIC = 116.1
+## pD = 158.6 and DIC = 1641.4
 ## DIC is an estimate of expected predictive error (lower deviance is better).
 ```
 
@@ -275,17 +412,6 @@ ggplot(Mgg[Mgg$varLabel == "Difference", ], aes(x=value)) +
 ```
 
 ![plot of chunk mcmcOutput](./runMetaAnalysis_files/figure-html/mcmcOutput2.png) 
-
-```r
-nnsBounds <- quantile(Mgg[Mgg$varLabel == "NNS", "value"], probs=c(0.025, 0.975))
-ggplot(Mgg[Mgg$varLabel == "NNS" & Mgg$value > nnsBounds[1] & Mgg$value < nnsBounds[2], ], aes(x=value)) +
-  geom_density(alpha=1/2, fill="grey") +
-  scale_x_continuous("Number needed to screen") +
-  scale_y_continuous("Density") +
-  scale_fill_discrete("")
-```
-
-![plot of chunk mcmcOutput](./runMetaAnalysis_files/figure-html/mcmcOutput3.png) 
 
 Save the JAGS objects.
 

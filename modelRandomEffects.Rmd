@@ -28,7 +28,7 @@ labbe(RR)
 Plot summary forest plot.
 
 ```{r ForestPlotRR}
-forest(RR, slab=study, transf=exp, ref=1)
+forest(RR, slab=D$study, atransf=exp, ref=1)
 ```
 
 Fit a random effects model for the relative difference.
@@ -54,6 +54,6 @@ labbe(RD)
 Plot summary forest plot.
 
 ```{r ForestPlotRD}
-forest(RD, slab=study, digits=4)
+forest(RD, slab=D$study, digits=4)
 ```
 
