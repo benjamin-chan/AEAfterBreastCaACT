@@ -61,3 +61,8 @@ Notes:
 ### Research Approach 
 
 ![Research Approach](StudyDocuments/NCI_Systematic_Review_Key_Questions_Final_Table.jpg)
+
+
+## Meeting notes
+
+Meeting notes are kept in [Evernote](https://www.evernote.com) with the tag `AEAfterBreastCaACT`.
