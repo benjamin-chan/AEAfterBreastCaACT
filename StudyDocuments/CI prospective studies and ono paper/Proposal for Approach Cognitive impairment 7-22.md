@@ -49,18 +49,26 @@ My responses in **bold.**
 
 * Wefel, Fan, Tager and Ahles have reported standardized scores.  
 
+**Wefel looks like it has ideal reporting of data we could use: pre and post mean scores for each measure/instrument. Would be better if we could get pre-post $\beta$ for each measure. This is the target we want to transform the data from other studies into.**
+
 * Tager, Jenkins and Ahles have not reported individual test scores for each time point.  
 
 * Tager reported the standardized baseline (T0) scores  and F test (DF, F
 value and p values) results for time and domain scores – but no actual scores
 for T1 and
 
+**There is an erratum and supplementary material document. Table 3 is only for the motor domain; it does not present $\beta$s for the other domains, let alone the individual measures. The time-by-chemotherapy interaction numbers in Table 4 only tell us if the slopes comparing non-CT and CT are different. It doesn't tell us what the pre-post change in the CT group is. We need a more complete Table 3.**
+
 * Jenkins reported regression (R^2, R^2_adj, F, p, factors, beta, t, p) on
 baseline (Table 3) and percentage  of each group showing reliable change for
 each test at T2 and T3 (Table 4) - but no baseline scores.
 
+**Really need to get T1 data. Not sure what to do with the $\beta$s in Table 3. They don't present a $\beta_{pre-post}$. Table 4 gives percentages and counts can be backed out of those numbers; but this doesn't give any sense of the magnitude of the decline/improvement.**
+
 * Ahles reported domain scores adjusted for age, education and baseline score
 (Table 3) – no individual  (single) test scores.
+
+**Reference #9 might have more information on how the domain scores were calculated. I took a quick look into this reference and I can't see that I can easily back-out an algorithm to get the values from the individual measures from a domain score.**
 
 1\. We are writing to Tager, Jenkins, and Ahles to request the unadjusted mean
 scores from each  time point with the hope getting additional data. In the
@@ -84,7 +92,9 @@ effects ofthese variables: type of  comparison  group (healthy vs women with
 breast cancer not receiving chemotherapy),  presence or absence of additional
 endocrine treatment,  age, IQ, education,  mood/anxiety/depression/fatigue
 
-**With only 4 studies, and possibly not pool-able, I would hesitate to do more than a simple pooled estimate of effect size.**
+**With only 4 studies, and possibly not pool-able, I would hesitate to do more than a simple pooled estimate of effect size. I need to take a closer look at the Ono meta-analysis. Since it's so recent, I'm thinking that the most we could probably do is to take there results and add on a study or two and see how that new information changes Ono's results.**
+
+**Looks like Ono was able to use Jenkins. I need to see how they did that.**
 
 
 **AYSE, you included Bender, Collins, and McDonald, in the zip file of studies you sent me. Was I supposed to take a look at those too? They didn't see relevent, but maybe I missed something.**
