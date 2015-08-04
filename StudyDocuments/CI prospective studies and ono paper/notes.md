@@ -1,4 +1,16 @@
-# Proposal for Approach to Systematic Review of the Effects of Breast Cancer Chemotherapy on Long-term Cognitive Function
+# Notes for Cognitive Impairment topic
+
+## 7/23/2015
+
+**From NCI Systematic Review Team Call 7/23/2015**
+
+```
+From: Ayse Tezcan [mailto:aztezcan@ucdavis.edu] 
+Sent: Wednesday, July 22, 2015 9:19 PM
+To: Meghan A Soulsby
+Cc: Joy Melnikow; Shauna Durbin; Alinea Noronha; Ganz Patricia M.D.; Benjamin Chan; Bandos, Hanna; Rivera, Donna (NIH/NCI) [F] (donna.rivera@nih.gov); Freedman, Andrew (NIH/NCI) [E]; Kristen E Greenlee
+Subject: *Update attachment* NCI Systematic Review Team Call, 7/23 @1:00pm PST
+```
 
 A large portion of the current literature on cognitive impairment evaluations
 of chemotherapy for breast  cancer consists of cross-sectional studies.  In
@@ -43,7 +55,7 @@ identify commonly used individual measures with larger effect sizes
 tests might  represent cognitive domains, which may enable the recommended use
 of specific tests in future  studies to reduce the redundant testing?
 
-## Questions to Ben:
+### Questions to Ben:
 
 My responses in **bold.**
 
@@ -98,3 +110,30 @@ endocrine treatment,  age, IQ, education,  mood/anxiety/depression/fatigue
 
 
 **AYSE, you included Bender, Collins, and McDonald, in the zip file of studies you sent me. Was I supposed to take a look at those too? They didn't see relevent, but maybe I missed something.**
+
+
+## 8/4/2015
+
+**For NCI Cognitive Impairment Call - 8/4 @ 3:30pm PST**
+
+```
+From: Benjamin Chan 
+Sent: Tuesday, August 04, 2015 1:44 PM
+To: 'Meghan A Soulsby'; Joy Melnikow; Ayse Zubeyde Tezcan; Ganz Patricia M.D.; Alinea Noronha; Van Dyk, Kathleen (KVanDyk@mednet.ucla.edu)
+Cc: Kristen E Greenlee
+Subject: RE: NCI Cognitive Impairment Call - 8/4 @ 3:30pm PST
+```
+
+Some thoughts after finally getting around to reading the Ono meta-analysis. We can talk about these on the call, but wanted to get my thoughts down.
+
+* Of the 8 studies we have included (Collins, Bender, Fan, McDonald, Wefel, Tager, Jenkins, and Ahles), Ono included only 4 (Collins, Bender, Wefel, and Jenkins)
+* I had a note to myself to figure out how Ono was able to include Jenkins. Ono states "Calculated effect sizes for each neuropsychological measure are available on request". *We're going to want to request these calculated effect sizes.* 
+* This also shifts the required data to be the effect size, and not group means/SDs. This makes things a little easier.
+* Ayse said the McDonald data is usable as-is (Table 2; only two measure reported, CES-D and STAI-S). 
+* Assuming we can get the individual effect sizes from Ono, then we *only need to get data from Fan, Tager, and Ahles.* 
+    * Fan reports median for the Trails A and B (Table 9). Not ideal, but can probably "shoehorn" these into an effect size.
+    * Fan also reports % with cognitive dysfunction using HSCS (Table 8). We can't use this as-is. We'd need the HSCS scores or to make some assumptions about the "normal/borderline", "mild", and "moderate-severe" categories.
+    * Tager reports effect sizes for the motor domain (Table 3; the t-value is the effect size). We don't really need to request more data w.r.t. Table 3. This only gets us data for a prospective comparison, however.
+    * We might still want to request data from Tager to get data for the other domains
+    * Ahles reports domain score means/SDs across time and broken out by group (Table 3). We're going to want something that looks like Table 3, but for the individual neurological tests.
+
