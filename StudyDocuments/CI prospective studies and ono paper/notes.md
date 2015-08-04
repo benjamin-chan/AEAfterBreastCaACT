@@ -130,10 +130,18 @@ Some thoughts after finally getting around to reading the Ono meta-analysis. We 
 * I had a note to myself to figure out how Ono was able to include Jenkins. Ono states "Calculated effect sizes for each neuropsychological measure are available on request". *We're going to want to request these calculated effect sizes.* 
 * This also shifts the required data to be the effect size, and not group means/SDs. This makes things a little easier.
 * Ayse said the McDonald data is usable as-is (Table 2; only two measure reported, CES-D and STAI-S). 
+    * CES-D and STAI-S are not neurological tests
+    * McDonald reports working memory data **look for where this data is reported**
 * Assuming we can get the individual effect sizes from Ono, then we *only need to get data from Fan, Tager, and Ahles.* 
     * Fan reports median for the Trails A and B (Table 9). Not ideal, but can probably "shoehorn" these into an effect size.
     * Fan also reports % with cognitive dysfunction using HSCS (Table 8). We can't use this as-is. We'd need the HSCS scores or to make some assumptions about the "normal/borderline", "mild", and "moderate-severe" categories.
+        * Patty knows the authors
     * Tager reports effect sizes for the motor domain (Table 3; the t-value is the effect size). We don't really need to request more data w.r.t. Table 3. This only gets us data for a prospective comparison, however.
+        * Patty does not know the authors
     * We might still want to request data from Tager to get data for the other domains
     * Ahles reports domain score means/SDs across time and broken out by group (Table 3). We're going to want something that looks like Table 3, but for the individual neurological tests.
+        * Patty knows the authors
 
+**TO-DO for Ben**
+Draft language for a hierarchy of data elements.
+E.g., "if you cannot send us X, then we would like to have Y."
