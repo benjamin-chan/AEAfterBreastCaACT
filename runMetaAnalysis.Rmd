@@ -7,16 +7,104 @@ output:
     keep_md: true
 ---
 
-Last update: `r paste(Sys.time())`
 
-`r R.version.string`
+# Background
 
+See [README.md](https://github.com/benjamin-chan/AEAfterBreastCaACT/blob/master/README.md).
+
+
+```{r, echo=FALSE}
+.timeStart <- Sys.time()
+```
+
+
+# Preliminaries
+
+Point the `path` object to your local repository.
+
+```{r}
+path <- getwd()
+```
+
+Check for and load packages.
+Source the `loadPkg` function.
+Source is found at this [gist](https://gist.githubusercontent.com/benjamin-chan/3b59313e8347fffea425/raw/0a274c7211228ad9d4134e51aa3ac3cbe87ba28a/loadPkg.R).
+
+```{r, echo=FALSE}
+setInternet2()
+source("http://gist.githubusercontent.com/benjamin-chan/3b59313e8347fffea425/raw/0a274c7211228ad9d4134e51aa3ac3cbe87ba28a/loadPkg.R")
+loadPkg("data.table")
+loadPkg("reshape2")
+loadPkg("metafor")
+loadPkg("R2jags")
+loadPkg("ggmcmc")
+```
+
+
+# Create datasets
+
+* `id` is Endnote number
+* `study` uses *Author (year)* format
+* `y1` is numerator for the intervention group
+* `n1` is denominator for the intervention group
+* `y0` is numerator for the control group
+* `n0` is denominator for the control group
+
+
+## Secondary malignancies
+
+```
+From: Ganz, Patricia, M.D. [mailto:PGanz@mednet.ucla.edu] 
+Sent: Friday, April 24, 2015 5:09 PM
+To: Benjamin Chan; Joy Melnikow (jamelnikow@ucdavis.edu); Meghan Soulsby (masoulsby@ucdavis.edu); Freedman, Andrew (NIH/NCI) [E] (freedmaa@mail.nih.gov)
+Subject: RE: NCI - secondary malignancies abstraction
+
+Hi Ben,
+I can help with this.  There are several main groups of therapies.  Here are some suggestions:
+Anthracycline (doxorubicin, epirubicin) vs. non-anthracycline
+Cyclophosphamide containing (Cytoxan) which is in almost all regimens
+Taxane (paclitaxel, docetaxel) vs. non-taxane containing regimens
+```
+
+```{r, eval=FALSE}
+options(stringsAsFactors=FALSE)
+DStudies <- rbind(data.frame(id=961, study="Fisher (1999)"),
+                  data.frame(id=970, study="Bergh (2000)"),
+                  data.frame(id=974, study="Chaplain (2000)"))
+D <- data.table(outcome="Secondary malignancies", DStudies)
+D <- rbind(data.table(type="Acute myeloid leukemia", D),
+           data.table(type="Myelodysplastic syndrome", D),
+           data.table(type="First reported treatment failure", D))
+D <- D[type == "Acute myeloid leukemia" & study == "Fisher (1999)",
+       `:=` (drug = "Anthracycline",
+             y1 = 5 + 6,
+             n1 = 845 + 847,
+             y0 = 15,
+             n0 = 2534)]
+D <- D[type == "Acute myeloid leukemia" & study == "Bergh (2000)",
+       `:=` (drug = "",
+             y1 = 3,
+             n1 = 251,
+             y0 = NA,
+             n0 = NA)]
+D <- D[type == "Acute myeloid leukemia" & study == "Chaplain (2000)",
+       `:=` (drug = "",
+             y1 = NA,
+             n1 = NA,
+             y0 = NA,
+             n0 = NA)]
+```
+
+
+## Example dataset
+
+**Do not create.** Only use as a template.
 
 Recreate the analysis from [Mishanina](http://www.ncbi.nlm.nih.gov/pubmed/24778358) (2014); Use of labour induction and risk of cesarean delivery: a systematic review and meta-analysis.; CMAJ. 2014 Jun 10;186(9):665-73. doi: 10.503/cmaj.130925. Epub 2014 Apr 28. Review. PMID: 24778358
 
 The data is from [Appendix 5](http://www.cmaj.ca/content/suppl/2014/04/28/cmaj.130925.DC1/labour-khan-appendix_5.pdf).
 
-```{r}
+```{r, eval=TRUE}
 D <- read.csv("labour-khan-appendix_5.csv", header=FALSE)
 names(D) <- c("study", "yInt", "nInt", "yCntl", "nCntl")
 denominator <- 1000
@@ -37,4 +125,16 @@ head(D)
 # Using JAGS
 
 ```{r, eval=TRUE, child=c("modelBayesian.Rmd")}
+```
+
+
+
+# Session info
+
+```{r, echo=FALSE}
+# .timeStart <- Sys.time()  # Defined at start of Rmd
+message(sprintf("Start time: %s\nEnd time: %s", .timeStart, Sys.time()))
+Sys.time() - .timeStart
+Sys.info()
+print(sessionInfo(), locale=FALSE)
 ```

@@ -1,10 +1,3 @@
-Load `R2jags` and `ggmcmc`.
-
-```{r}
-require(R2jags, quietly=TRUE)
-require(ggmcmc, quietly=TRUE)
-```
-
 Specify the model using JAGS syntax.
 Write the model to a text file.
 

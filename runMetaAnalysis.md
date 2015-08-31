@@ -1,10 +1,150 @@
 # Long term adverse events after breast cancer adjuvant chemotherapy
 Benjamin Chan  
 
-Last update: 2014-09-10 11:07:33
 
-R version 3.1.1 (2014-07-10)
+# Background
 
+See [README.md](https://github.com/benjamin-chan/AEAfterBreastCaACT/blob/master/README.md).
+
+
+
+
+
+# Preliminaries
+
+Point the `path` object to your local repository.
+
+
+```r
+path <- getwd()
+```
+
+Check for and load packages.
+Source the `loadPkg` function.
+Source is found at this [gist](https://gist.githubusercontent.com/benjamin-chan/3b59313e8347fffea425/raw/0a274c7211228ad9d4134e51aa3ac3cbe87ba28a/loadPkg.R).
+
+
+```
+## Loading required package: data.table
+## Loading required package: reshape2
+## Loading required package: metafor
+## Loading required package: Matrix
+## 
+## Attaching package: 'Matrix'
+## 
+## The following objects are masked from 'package:base':
+## 
+##     crossprod, tcrossprod
+## 
+## Loading 'metafor' package (version 1.9-7). For an overview 
+## and introduction to the package please type: help(metafor).
+## Loading required package: R2jags
+## Loading required package: rjags
+## Loading required package: coda
+## Linked to JAGS 3.4.0
+## Loaded modules: basemod,bugs
+## 
+## Attaching package: 'R2jags'
+## 
+## The following object is masked from 'package:coda':
+## 
+##     traceplot
+## 
+## Loading required package: ggmcmc
+## Loading required package: dplyr
+## 
+## Attaching package: 'dplyr'
+## 
+## The following objects are masked from 'package:data.table':
+## 
+##     between, last
+## 
+## The following object is masked from 'package:stats':
+## 
+##     filter
+## 
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+## 
+## Loading required package: tidyr
+## 
+## Attaching package: 'tidyr'
+## 
+## The following object is masked from 'package:Matrix':
+## 
+##     expand
+## 
+## Loading required package: ggplot2
+## Loading required package: GGally
+## 
+## Attaching package: 'GGally'
+## 
+## The following object is masked from 'package:dplyr':
+## 
+##     nasa
+```
+
+
+# Create datasets
+
+* `id` is Endnote number
+* `study` uses *Author (year)* format
+* `y1` is numerator for the intervention group
+* `n1` is denominator for the intervention group
+* `y0` is numerator for the control group
+* `n0` is denominator for the control group
+
+
+## Secondary malignancies
+
+```
+From: Ganz, Patricia, M.D. [mailto:PGanz@mednet.ucla.edu] 
+Sent: Friday, April 24, 2015 5:09 PM
+To: Benjamin Chan; Joy Melnikow (jamelnikow@ucdavis.edu); Meghan Soulsby (masoulsby@ucdavis.edu); Freedman, Andrew (NIH/NCI) [E] (freedmaa@mail.nih.gov)
+Subject: RE: NCI - secondary malignancies abstraction
+
+Hi Ben,
+I can help with this.  There are several main groups of therapies.  Here are some suggestions:
+Anthracycline (doxorubicin, epirubicin) vs. non-anthracycline
+Cyclophosphamide containing (Cytoxan) which is in almost all regimens
+Taxane (paclitaxel, docetaxel) vs. non-taxane containing regimens
+```
+
+
+```r
+options(stringsAsFactors=FALSE)
+DStudies <- rbind(data.frame(id=961, study="Fisher (1999)"),
+                  data.frame(id=970, study="Bergh (2000)"),
+                  data.frame(id=974, study="Chaplain (2000)"))
+D <- data.table(outcome="Secondary malignancies", DStudies)
+D <- rbind(data.table(type="Acute myeloid leukemia", D),
+           data.table(type="Myelodysplastic syndrome", D),
+           data.table(type="First reported treatment failure", D))
+D <- D[type == "Acute myeloid leukemia" & study == "Fisher (1999)",
+       `:=` (drug = "Anthracycline",
+             y1 = 5 + 6,
+             n1 = 845 + 847,
+             y0 = 15,
+             n0 = 2534)]
+D <- D[type == "Acute myeloid leukemia" & study == "Bergh (2000)",
+       `:=` (drug = "",
+             y1 = 3,
+             n1 = 251,
+             y0 = NA,
+             n0 = NA)]
+D <- D[type == "Acute myeloid leukemia" & study == "Chaplain (2000)",
+       `:=` (drug = "",
+             y1 = NA,
+             n1 = NA,
+             y0 = NA,
+             n0 = NA)]
+```
+
+
+## Example dataset
+
+**Do not create.** Only use as a template.
 
 Recreate the analysis from [Mishanina](http://www.ncbi.nlm.nih.gov/pubmed/24778358) (2014); Use of labour induction and risk of cesarean delivery: a systematic review and meta-analysis.; CMAJ. 2014 Jun 10;186(9):665-73. doi: 10.503/cmaj.130925. Epub 2014 Apr 28. Review. PMID: 24778358
 
@@ -23,38 +163,25 @@ head(D)
 ```
 
 ```
-##                study yInt nInt yCntl nCntl rateInt rateCntl     rr      rd
-## 1         Akyol 1999   10   52    21    74  192.31   283.78 0.6777  -91.48
-## 2       Al Malt 1995   12   49    12    54  244.90   222.22 1.1020   22.68
-## 3       Alcalay 1996    3   74     2    80   40.54    25.00 1.6216   15.54
-## 4 AlcosebaÂ·Lim 1992    4   65     3    65   61.54    46.15 1.3333   15.38
-## 5        Allott 1993    4   99     5    96   40.40    52.08 0.7758  -11.68
-## 6         Asher 2009   10   59    12    30  169.49   400.00 0.4237 -230.51
+##                study yInt nInt yCntl nCntl   rateInt  rateCntl        rr
+## 1         Akyol 1999   10   52    21    74 192.30769 283.78378 0.6776557
+## 2       Al Malt 1995   12   49    12    54 244.89796 222.22222 1.1020408
+## 3       Alcalay 1996    3   74     2    80  40.54054  25.00000 1.6216216
+## 4 AlcosebaÂ·Lim 1992    4   65     3    65  61.53846  46.15385 1.3333333
+## 5        Allott 1993    4   99     5    96  40.40404  52.08333 0.7757576
+## 6         Asher 2009   10   59    12    30 169.49153 400.00000 0.4237288
+##           rd
+## 1  -91.47609
+## 2   22.67574
+## 3   15.54054
+## 4   15.38462
+## 5  -11.67929
+## 6 -230.50847
 ```
 
 
 # Using random-effects model
 
-
-Load required packages
-
-
-```r
-require(metafor)
-```
-
-```
-## Loading required package: metafor
-## Loading required package: Formula
-## Loading required package: Matrix
-## 
-## Loading 'metafor' package (version 1.9-4). For an overview 
-## and introduction to the package please type: help(metafor).
-```
-
-```r
-# require(lme4)
-```
 
 Fit a random effects model for the relative risk.
 
@@ -97,6 +224,8 @@ predict(RR, transf=exp)
 ##  0.8828 0.8398 0.9279 0.8398 0.9279
 ```
 
+
+
 Plot model diagnostics.
 
 
@@ -104,7 +233,7 @@ Plot model diagnostics.
 plot(RR)
 ```
 
-![plot of chunk ModelDiagnosticsRR](./runMetaAnalysis_files/figure-html/ModelDiagnosticsRR.png) 
+![](runMetaAnalysis_files/figure-html/ModelDiagnosticsRR-1.png) 
 
 Plot a L'Abbe plot.
 
@@ -113,7 +242,7 @@ Plot a L'Abbe plot.
 labbe(RR)
 ```
 
-![plot of chunk LAbbePlotRR](./runMetaAnalysis_files/figure-html/LAbbePlotRR.png) 
+![](runMetaAnalysis_files/figure-html/LAbbePlotRR-1.png) 
 
 Plot summary forest plot.
 
@@ -122,7 +251,7 @@ Plot summary forest plot.
 forest(RR, slab=D$study, atransf=exp, ref=1)
 ```
 
-![plot of chunk ForestPlotRR](./runMetaAnalysis_files/figure-html/ForestPlotRR.png) 
+![](runMetaAnalysis_files/figure-html/ForestPlotRR-1.png) 
 
 Fit a random effects model for the relative difference.
 
@@ -172,7 +301,7 @@ Plot model diagnostics.
 plot(RD)
 ```
 
-![plot of chunk ModelDiagnosticsRD](./runMetaAnalysis_files/figure-html/ModelDiagnosticsRD.png) 
+![](runMetaAnalysis_files/figure-html/ModelDiagnosticsRD-1.png) 
 
 Plot a L'Abbe plot.
 
@@ -181,7 +310,7 @@ Plot a L'Abbe plot.
 labbe(RD)
 ```
 
-![plot of chunk LAbbePlotRD](./runMetaAnalysis_files/figure-html/LAbbePlotRD.png) 
+![](runMetaAnalysis_files/figure-html/LAbbePlotRD-1.png) 
 
 Plot summary forest plot.
 
@@ -190,36 +319,12 @@ Plot summary forest plot.
 forest(RD, slab=D$study, digits=4)
 ```
 
-![plot of chunk ForestPlotRD](./runMetaAnalysis_files/figure-html/ForestPlotRD.png) 
+![](runMetaAnalysis_files/figure-html/ForestPlotRD-1.png) 
 
 
 
 # Using JAGS
 
-
-Load `R2jags` and `ggmcmc`.
-
-
-```r
-require(R2jags, quietly=TRUE)
-```
-
-```
-## Loading required package: coda
-## Loading required package: lattice
-## Linked to JAGS 3.4.0
-## Loaded modules: basemod,bugs
-## 
-## Attaching package: 'R2jags'
-## 
-## The following object is masked from 'package:coda':
-## 
-##     traceplot
-```
-
-```r
-require(ggmcmc, quietly=TRUE)
-```
 
 Specify the model using JAGS syntax.
 Write the model to a text file.
@@ -301,7 +406,7 @@ system.time(M <- jags.parallel(D3, inits, params, model.file="modelMetaAnalysis.
 
 ```
 ##    user  system elapsed 
-##    0.01    0.02   49.07
+##    0.01    0.01   49.84
 ```
 
 Convert the JAGS object to an MCMC object.
@@ -320,19 +425,19 @@ Check for convergence.
 ggs_traceplot(Mggs)
 ```
 
-![plot of chunk mcmcConvergence](./runMetaAnalysis_files/figure-html/mcmcConvergence1.png) 
+![](runMetaAnalysis_files/figure-html/mcmcConvergence-1.png) 
 
 ```r
 ggs_autocorrelation(Mggs)
 ```
 
-![plot of chunk mcmcConvergence](./runMetaAnalysis_files/figure-html/mcmcConvergence2.png) 
+![](runMetaAnalysis_files/figure-html/mcmcConvergence-2.png) 
 
 ```r
 ggs_compare_partial(Mggs)
 ```
 
-![plot of chunk mcmcConvergence](./runMetaAnalysis_files/figure-html/mcmcConvergence3.png) 
+![](runMetaAnalysis_files/figure-html/mcmcConvergence-3.png) 
 
 **Convergence looks good.**
 So, show the model output.
@@ -347,21 +452,21 @@ M
 ##  3 chains, each with 30000 iterations (first 15000 discarded), n.thin = 15
 ##  n.sims = 3000 iterations saved
 ##           mu.vect sd.vect     2.5%      25%      50%      75%    97.5%
-## alpha      -1.665   0.074   -1.810   -1.715   -1.665   -1.614   -1.522
-## beta       -0.161   0.032   -0.223   -0.183   -0.161   -0.139   -0.099
-## sigma       0.845   0.058    0.739    0.806    0.842    0.881    0.969
-## deviance 1482.786  17.807 1450.105 1470.659 1481.967 1494.005 1519.831
+## alpha      -1.662   0.074   -1.809   -1.712   -1.662   -1.613   -1.517
+## beta       -0.160   0.032   -0.221   -0.182   -0.160   -0.138   -0.095
+## sigma       0.846   0.056    0.740    0.807    0.845    0.883    0.963
+## deviance 1483.392  17.901 1450.185 1470.938 1482.644 1495.532 1521.106
 ##           Rhat n.eff
-## alpha    1.001  2900
-## beta     1.001  2500
-## sigma    1.003  1200
+## alpha    1.001  3000
+## beta     1.002  1600
+## sigma    1.010   210
 ## deviance 1.001  3000
 ## 
 ## For each parameter, n.eff is a crude measure of effective sample size,
 ## and Rhat is the potential scale reduction factor (at convergence, Rhat=1).
 ## 
 ## DIC info (using the rule, pD = var(deviance)/2)
-## pD = 158.6 and DIC = 1641.4
+## pD = 160.3 and DIC = 1643.7
 ## DIC is an estimate of expected predictive error (lower deviance is better).
 ```
 
@@ -369,7 +474,7 @@ M
 ggs_density(Mggs)
 ```
 
-![plot of chunk mcmcPosterior](./runMetaAnalysis_files/figure-html/mcmcPosterior.png) 
+![](runMetaAnalysis_files/figure-html/mcmcPosterior-1.png) 
 
 Combine the MCMC chains.
 Calculate some useful output from the model.
@@ -400,7 +505,7 @@ ggplot(Mgg[Mgg$varLabel %in% c("Intervention", "Control"), ], aes(x=value, fill=
   scale_fill_discrete("")
 ```
 
-![plot of chunk mcmcOutput](./runMetaAnalysis_files/figure-html/mcmcOutput1.png) 
+![](runMetaAnalysis_files/figure-html/mcmcOutput-1.png) 
 
 ```r
 ggplot(Mgg[Mgg$varLabel == "Difference", ], aes(x=value)) +
@@ -411,7 +516,7 @@ ggplot(Mgg[Mgg$varLabel == "Difference", ], aes(x=value)) +
   geom_vline(xIntercept = 0)
 ```
 
-![plot of chunk mcmcOutput](./runMetaAnalysis_files/figure-html/mcmcOutput2.png) 
+![](runMetaAnalysis_files/figure-html/mcmcOutput-2.png) 
 
 Save the JAGS objects.
 
@@ -423,4 +528,53 @@ modelJAGS <- list(metadata = list(timestamp = Sys.time(),
                   jags = M,
                   chains = Mdf)
 save(modelJAGS, file="modelJAGS.RData")
+```
+
+
+
+# Session info
+
+
+```
+## Start time: 2015-08-31 16:31:59
+## End time: 2015-08-31 16:33:02
+```
+
+```
+## Time difference of 1.056022 mins
+```
+
+```
+##                      sysname                      release 
+##                    "Windows"                      "7 x64" 
+##                      version                     nodename 
+## "build 7601, Service Pack 1"                    "GHBA299" 
+##                      machine                        login 
+##                     "x86-64"                      "chanb" 
+##                         user               effective_user 
+##                      "chanb"                      "chanb"
+```
+
+```
+## R version 3.1.3 (2015-03-09)
+## Platform: x86_64-w64-mingw32/x64 (64-bit)
+## Running under: Windows 7 x64 (build 7601) Service Pack 1
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+##  [1] ggmcmc_0.7.1     GGally_0.5.0     ggplot2_1.0.1    tidyr_0.2.0     
+##  [5] dplyr_0.4.1      R2jags_0.5-7     rjags_3-15       coda_0.17-1     
+##  [9] metafor_1.9-7    Matrix_1.2-1     reshape2_1.4.1   data.table_1.9.4
+## 
+## loaded via a namespace (and not attached):
+##  [1] abind_1.4-3      assertthat_0.1   boot_1.3-15      chron_2.3-45    
+##  [5] colorspace_1.2-6 DBI_0.3.1        digest_0.6.8     evaluate_0.7    
+##  [9] formatR_1.2      grid_3.1.3       gtable_0.1.2     htmltools_0.2.6 
+## [13] knitr_1.10.5     labeling_0.3     lattice_0.20-31  lazyeval_0.1.10 
+## [17] magrittr_1.5     MASS_7.3-40      munsell_0.4.2    parallel_3.1.3  
+## [21] plyr_1.8.2       proto_0.3-10     R2WinBUGS_2.1-21 R6_2.0.1        
+## [25] Rcpp_0.11.6      reshape_0.8.5    rmarkdown_0.6.1  scales_0.2.4    
+## [29] stringi_0.4-1    stringr_1.0.0    tools_3.1.3      yaml_2.1.13
 ```

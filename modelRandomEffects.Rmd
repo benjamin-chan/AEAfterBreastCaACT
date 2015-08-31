@@ -1,16 +1,13 @@
-Load required packages
-
-```{r}
-require(metafor)
-# require(lme4)
-```
-
 Fit a random effects model for the relative risk.
 
 ```{r}
 RR <- rma(measure="RR", data=D, ai=yInt, n1i=nInt, ci=yCntl, n2i=nCntl)
 summary(RR)
 predict(RR, transf=exp)
+```
+
+```{r, echo=FALSE}
+forestPlotHeight <- 24
 ```
 
 Plot model diagnostics.
@@ -27,7 +24,7 @@ labbe(RR)
 
 Plot summary forest plot.
 
-```{r ForestPlotRR}
+```{r ForestPlotRR, fig.height=forestPlotHeight}
 forest(RR, slab=D$study, atransf=exp, ref=1)
 ```
 
@@ -53,7 +50,7 @@ labbe(RD)
 
 Plot summary forest plot.
 
-```{r ForestPlotRD}
+```{r ForestPlotRD, fig.height=forestPlotHeight}
 forest(RD, slab=D$study, digits=4)
 ```
 
