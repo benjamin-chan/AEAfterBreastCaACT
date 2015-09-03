@@ -1,7 +1,9 @@
 Specify the model using JAGS syntax.
 Write the model to a text file.
+Show the model.
 
-```{r}
+```{r, echo=FALSE}
+f <- tempfile()
 cat("model
 {
   # Likelihood
@@ -19,7 +21,11 @@ cat("model
   # sigma ~ dgamma(0.001, 0.001)
 }
 ",
-file="modelMetaAnalysis.txt")
+file=f)
+```
+
+```{r}
+cat(readLines(f), sep="\n")
 ```
 
 Prepare the data for JAGS.
@@ -50,9 +56,10 @@ set.seed(as.numeric(as.Date("2014-08-27")))
 
 Run the model.
 **Don't use `jags()`;** it's slow.
+Actually, use `jags()` and check the speed difference.
 
-```{r, eval=FALSE}
-system.time(M <- jags(D2, inits, params, model.file="modelMetaAnalysis.txt", n.iter=30E3))
+```{r, eval=TRUE}
+system.time(M <- jags(D2, inits, params, model.file=f, n.iter=30E3))
 ```
 
 **Use `jags.parallel()` instead;** it's faster.
@@ -66,7 +73,7 @@ nInt <- D$nInt
 yCntl <- D$yCntl
 nCntl <- D$nCntl
 D3 <- list("n", "yInt", "nInt", "yCntl", "nCntl")
-system.time(M <- jags.parallel(D3, inits, params, model.file="modelMetaAnalysis.txt", n.chains=3, n.iter=30E3))
+system.time(M <- jags.parallel(D3, inits, params, model.file=f, n.chains=3, n.iter=30E3))
 ```
 
 Convert the JAGS object to an MCMC object.
