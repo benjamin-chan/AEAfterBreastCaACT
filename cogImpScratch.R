@@ -12,6 +12,10 @@ colNames <- data.frame(colNum = 1:ncol(D0),
                                    sprintf("%s%s", LETTERS[2], LETTERS),
                                    sprintf("%s%s", LETTERS[3], LETTERS))[1:ncol(D0)],
                        varName = names(D0))
+
+DOno <- D0[is.na(First.Auth), c(51:ncol(D0)), with=FALSE]
+DOno <- cbind(D[, .N, .(author, timeDays)], summarized)
+
 importantVar <- c(1, 7:10, 12:15, 17, 34:38, 64)
 D <- D0[!is.na(First.Auth), importantVar, with=FALSE]
 setnames(D,
@@ -51,22 +55,18 @@ D <- D[,
        `:=` (variance = var1 + var2)]
 D <- D[,
        `:=` (se = sqrt(variance),
-             weight = 1 / variance)]
+             weightFE = 1 / variance)]
 D <- D[,
-       `:=` (effSizeWeighted = weight * hedgesG)]
-
-# Check
-D[, .N, .(effSizeWeighted == effsize0)]
-D[weight != weight0, .(author, weight, weight0, se, se0)]
+       `:=` (effSizeWeightedFE = weightFE * hedgesG)]
 
 DFixed <- D[,
               .(df = .N,
-                sumWeights = sum(weight),
-                effSize = sum(effSizeWeighted) / sum(weight),
-                se = sqrt(1 / sum(weight)),
-                sumEffSizeWeighted = sum(effSizeWeighted),
-                ssEffSizeWeighted = sum(weight * hedgesG ^ 2),
-                ssWeights = sum(weight ^ 2)),
+                sumWeights = sum(weightFE),
+                effSize = sum(effSizeWeightedFE) / sum(weightFE),
+                se = sqrt(1 / sum(weightFE)),
+                sumEffSizeWeighted = sum(effSizeWeightedFE),
+                ssEffSizeWeighted = sum(weightFE * hedgesG ^ 2),
+                ssWeights = sum(weightFE ^ 2)),
               .(author, timeDays)]
 DFixed <- DFixed[,
                  `:=` (z = effSize / se,
@@ -75,11 +75,35 @@ DFixed <- DFixed[,
                        Q = ssEffSizeWeighted - (sumEffSizeWeighted ^ 2 / sumWeights),
                        criticalValue = qchisq(0.05, df, lower.tail=FALSE))]
 DFixed <- DFixed[,
-                 `:=` (pvalue = pchisq(Q, df, lower.tail=FALSE))]
+                 `:=` (pvalue = pchisq(Q, df, lower.tail=FALSE),
+                       Isq = 100 * ((Q - df) / Q))]
 
-summarized <- D0[is.na(First.Auth), c(51:ncol(D0)), with=FALSE]
-summarized <- cbind(D[, .N, .(author, timeDays)], summarized)
+all.equal(DOno[, .(z, Q)], 
+          DFixed[, .(z, Q)])
 
-prec <- 15
-identical(signif(summarized[, .(z, Q)], digits=prec), 
-          signif(DFixed[, .(z, Q)], digits=prec))
+D[, .N, randomEffect]  # NEED TO FIND OUT WHERE RANDOM EFFECT COMES FROM
+
+D <- D[, weightRE := 1 / (variance + randomEffect)]
+D <- D[, effSizeWeightedRE := weightRE * hedgesG]
+
+DRandom <- D[,
+             .(df = .N,
+               sumWeights = sum(weightRE),
+               ssEffSizeWeighted = sum(weightRE * hedgesG ^ 2),
+               ssWeights = sum(weightRE ^ 2),
+               sumEffSizeWeighted = sum(effSizeWeightedRE),
+               effSize = sum(effSizeWeightedRE) / sum(weightRE),
+               se = sqrt(1 / sum(weightRE))),
+             .(author, timeDays)]
+DRandom <- DRandom[,
+                   `:=` (z = effSize / se,
+                         lowerCI = effSize + qnorm(0.025) * se,
+                         upperCI = effSize + qnorm(0.975) * se,
+                         Q = ssEffSizeWeighted - (sumEffSizeWeighted ^ 2 / sumWeights),
+                         criticalValue = qchisq(0.05, df, lower.tail=FALSE))]
+DRandom <- DRandom[,
+                   `:=` (pvalue = pchisq(Q, df, lower.tail=FALSE),
+                         Isq = 100 * ((Q - df) / Q))]
+
+all.equal(DOno[, c(21, 24), with=FALSE], 
+          DRandom[, .(z, Q)])
