@@ -1,3 +1,18 @@
+# Replicate Ono
+
+Replicate data from 
+[Ono, Miyuki, et al.](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC4354286/)
+"A meta-analysis of cognitive impairment and decline associated with adjuvant chemotherapy in women with breast cancer."
+*Frontiers in oncology* 
+5
+(2015).
+
+Data file was requested and received from the author in October 2015.
+
+Read data file (Excel XLSX format).
+Show a map of the column names and locations.
+
+```{r}
 path <- "StudyDocuments/CognitiveImpairment"
 list.files(path)
 if(!require(openxlsx)) {install.packages("openxlsx")}
@@ -12,10 +27,24 @@ colNames <- data.frame(colNum = 1:ncol(D0),
                                    sprintf("%s%s", LETTERS[2], LETTERS),
                                    sprintf("%s%s", LETTERS[3], LETTERS))[1:ncol(D0)],
                        varName = names(D0))
+colNames
+```
 
+Put the summary rows in a separate data table, `DOno`.
+
+```{r}
 DOno <- D0[is.na(First.Auth), c(51:ncol(D0)), with=FALSE]
-DOno <- cbind(D[, .N, .(author, timeDays)], summarized)
+```
 
+Put the instrument-level rows in a separate data table, `D`.
+Only keep the columns needed to calculate fixed and random effects statistics.
+
+**Need more information** on the `randomEffect` column.
+This column has a mean of `r D[, mean(randomEffect)]` 
+and a standard deviation of `r D[, sd(randomEffect)]`.
+It's a mystery where this comes from.
+
+```{r}
 importantVar <- c(1, 7:10, 12:15, 17, 34:38, 64)
 D <- D0[!is.na(First.Auth), importantVar, with=FALSE]
 setnames(D,
@@ -58,7 +87,13 @@ D <- D[,
              weightFE = 1 / variance)]
 D <- D[,
        `:=` (effSizeWeightedFE = weightFE * hedgesG)]
+D <- D[, weightRE := 1 / (variance + randomEffect)]
+D <- D[, effSizeWeightedRE := weightRE * hedgesG]
+```
 
+Calculate fixed effects statisitcs.
+
+```{r}
 DFixed <- D[,
               .(df = .N,
                 sumWeights = sum(weightFE),
@@ -77,15 +112,21 @@ DFixed <- DFixed[,
 DFixed <- DFixed[,
                  `:=` (pvalue = pchisq(Q, df, lower.tail=FALSE),
                        Isq = 100 * ((Q - df) / Q))]
+```
 
-all.equal(DOno[, .(z, Q)], 
-          DFixed[, .(z, Q)])
+Check if my calculations agree with Ono's.
 
-D[, .N, randomEffect]  # NEED TO FIND OUT WHERE RANDOM EFFECT COMES FROM
+```{r}
+isCheckFixedPassed <- all.equal(DOno[, .(StudyES, z, Q)], 
+                                DFixed[, .(effSize, z, Q)],
+                                check.names=FALSE)
+message(sprintf("Do my FIXED effect statistic calculations agree with Ono's? %s",
+                isCheckFixedPassed))
+```
 
-D <- D[, weightRE := 1 / (variance + randomEffect)]
-D <- D[, effSizeWeightedRE := weightRE * hedgesG]
+Calculate random effects statisitcs.
 
+```{r}
 DRandom <- D[,
              .(df = .N,
                sumWeights = sum(weightRE),
@@ -104,6 +145,37 @@ DRandom <- DRandom[,
 DRandom <- DRandom[,
                    `:=` (pvalue = pchisq(Q, df, lower.tail=FALSE),
                          Isq = 100 * ((Q - df) / Q))]
+```
 
-all.equal(DOno[, c(21, 24), with=FALSE], 
-          DRandom[, .(z, Q)])
+Check if my calculations agree with Ono's.
+
+```{r}
+isCheckRandomPassed <- all.equal(DOno[, c(19, 21, 24), with=FALSE], 
+                                 DRandom[, .(effSize, z, Q)],
+                                 check.names=FALSE)
+message(sprintf("Do my RANDOM effect statistic calculations agree with Ono's? %s",
+                isCheckRandomPassed))
+```
+
+Save working data tables to file if the integrity checks passed.
+I don't need to save `DOno` since the integrity checks passed.
+
+```{r}
+metadataD = makeMetadata(D)
+metadataDFixed = makeMetadata(DFixed)
+metadataDRandom = makeMetadata(DRandom)
+if (isCheckFixedPassed & isCheckRandomPassed) {
+  save(D,
+     metadataD,
+     DFixed,
+     metadataDFixed,
+     DRandom,
+     metadataDRandom,
+     file="working.RData")
+  message(sprintf("working.RData saved on: %s\nFile size: %s bytes", 
+                  file.mtime("working.RData"),
+                  file.size("working.RData")))
+} else {
+  warning("Integrity checks failed.\nworking.RData not saved.")
+}
+```
