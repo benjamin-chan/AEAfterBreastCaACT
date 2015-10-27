@@ -161,6 +161,8 @@ Save working data tables to file if the integrity checks passed.
 I don't need to save `DOno` since the integrity checks passed.
 
 ```{r}
+library(devtools)
+source_gist("https://gist.github.com/benjamin-chan/091209ab4eee1f171540")
 metadataD = makeMetadata(D)
 metadataDFixed = makeMetadata(DFixed)
 metadataDRandom = makeMetadata(DRandom)
