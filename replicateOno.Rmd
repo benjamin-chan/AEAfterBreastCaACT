@@ -7,7 +7,7 @@ Replicate data from
 5
 (2015).
 
-Data file was requested and received from the author in October 2015.
+Data file was requested and received from the co-author, [James Ogilvie](https://www.griffith.edu.au/health/school-applied-psychology/rhd-students/james-ogilvie), in October 2015.
 
 Read data file (Excel XLSX format).
 Show a map of the column names and locations.
