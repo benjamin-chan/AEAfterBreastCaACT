@@ -1,0 +1,43 @@
+# Read Ahles
+
+Read data from 
+[Ahles TA, et al.](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2988635/)
+"Longitudinal Assessment of Cognitive Changes Associated With Adjuvant Treatment for Breast Cancer: Impact of Age and Cognitive Reserve."
+*J Clin Oncol.* 
+2010 Oct 10; 28(29): 4434-4440.
+
+Data file was requested and received from the co-author, [Yuelin Li](https://www.mskcc.org/profile/yuelin-li), in October 2015.
+
+Read data file (text format).
+
+```{r}
+path <- "StudyDocuments/CognitiveImpairment"
+# list.files(path)
+f <- sprintf("%s/%s", path, "Soulsby_means.txt")
+D <- fread(f, sep="|")
+```
+
+Study design.
+
+```{r}
+D[, .(nrows = .N, totalN = sum(N)), .(txgrp, ptime)]
+```
+
+Instruments.
+
+```{r}
+D[, .N, .(Variable, Label)]
+```
+
+Save working data tables to file if the integrity checks passed.
+I don't need to save `DOno` since the integrity checks passed.
+
+```{r}
+metadata = makeMetadata(D)
+f <- "Ahles.RData"
+save(D, metadata, file=f)
+message(sprintf("%s saved on: %s\nFile size: %s bytes", 
+                f,
+                file.mtime(f),
+                file.size(f)))
+```
