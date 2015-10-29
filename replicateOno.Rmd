@@ -2,10 +2,9 @@
 
 Replicate data from 
 [Ono, Miyuki, et al.](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC4354286/)
-"A meta-analysis of cognitive impairment and decline associated with adjuvant chemotherapy in women with breast cancer."
-*Frontiers in oncology* 
-5
-(2015).
+"A Meta-Analysis of Cognitive Impairment and Decline Associated with Adjuvant Chemotherapy in Women with Breast Cancer."
+*Front Oncol.* 
+2015; 5: 59. 
 
 Data file was requested and received from the co-author, [James Ogilvie](https://www.griffith.edu.au/health/school-applied-psychology/rhd-students/james-ogilvie), in October 2015.
 
@@ -16,11 +15,6 @@ Read data file (Google Sheet format).
 # list.files(path)
 # f <- sprintf("%s/%s", path, "Requested Chemo Data.xlsx")
 url <- "https://docs.google.com/spreadsheets/d/1kANi0laOaoFbBXxbanARcp7zowQ5eOfOcOr_sQLhJHo/edit?usp=sharing"
-# if(!require(openxlsx)) {install.packages("openxlsx")}
-# library(openxlsx)
-if(!require(googlesheets)) {install.packages("googlesheets")}
-library(googlesheets)
-library(data.table)
 gs_auth()
 gs_url(url)
 # D0 <- read.xlsx(f, sheet=1)
@@ -55,7 +49,7 @@ and a standard deviation of `r D0[, sd(RANDOM.EFFECT, na.rm=TRUE)]`.
 It's a mystery where this comes from.
 
 ```{r}
-importantVar <- c(1, 7:10, 12:15, 17, 34:38, 64)
+importantVar <- c(1, 7:10, 12:15, 17, 34:38, 64, 31:33)
 D <- D0[!is.na(First.Auth), importantVar, with=FALSE]
 setnames(D,
          names(D),
@@ -74,7 +68,8 @@ setnames(D,
            "meanGroup2",
            "sdGroup2",
            "direction",
-           "randomEffect"))  # NEED TO FIND OUT WHERE RANDOM EFFECT COMES FROM
+           "randomEffect",
+           gsub("\\.", "", names(D0)[31:33])))  # NEED TO FIND OUT WHERE RANDOM EFFECT COMES FROM
 D <- D[direction == "Lower worse",
        `:=` (diffMean = meanGroup2 - meanGroup1)]
 D <- D[direction == "Greater worse",
@@ -99,6 +94,12 @@ D <- D[,
        `:=` (effSizeWeightedFE = weightFE * hedgesG)]
 D <- D[, weightRE := 1 / (variance + randomEffect)]
 D <- D[, effSizeWeightedRE := weightRE * hedgesG]
+```
+
+Domains and tests.
+
+```{r}
+D[, .N, .(CognitiveDomainPrimary, CogTest)][order(CognitiveDomainPrimary, CogTest)]
 ```
 
 Calculate fixed effects statisitcs.
@@ -126,12 +127,13 @@ DFixed <- DFixed[,
 
 Check if my calculations agree with Ono's.
 
-```{r}
+```{r, results="asis"}
 isCheckFixedPassed <- all.equal(DOno[, .(StudyES, z, Q)], 
                                 DFixed[, .(effSize, z, Q)],
                                 check.names=FALSE)
 message(sprintf("Do my FIXED effect statistic calculations agree with Ono's? %s",
                 isCheckFixedPassed))
+print(xtable(DFixed), type="html")
 ```
 
 Calculate random effects statisitcs.
@@ -159,35 +161,36 @@ DRandom <- DRandom[,
 
 Check if my calculations agree with Ono's.
 
-```{r}
+```{r, results="asis"}
 isCheckRandomPassed <- all.equal(DOno[, c(19, 21, 24), with=FALSE], 
                                  DRandom[, .(effSize, z, Q)],
                                  check.names=FALSE)
 message(sprintf("Do my RANDOM effect statistic calculations agree with Ono's? %s",
                 isCheckRandomPassed))
+print(xtable(DRandom), type="html")
 ```
 
 Save working data tables to file if the integrity checks passed.
 I don't need to save `DOno` since the integrity checks passed.
 
 ```{r}
-library(devtools)
-source_gist("https://gist.github.com/benjamin-chan/091209ab4eee1f171540")
 metadataD = makeMetadata(D)
 metadataDFixed = makeMetadata(DFixed)
 metadataDRandom = makeMetadata(DRandom)
 if (isCheckFixedPassed & isCheckRandomPassed) {
+  f <- "Ono.RData"
   save(D,
-     metadataD,
-     DFixed,
-     metadataDFixed,
-     DRandom,
-     metadataDRandom,
-     file="working.RData")
-  message(sprintf("working.RData saved on: %s\nFile size: %s bytes", 
-                  file.mtime("working.RData"),
-                  file.size("working.RData")))
+       metadataD,
+       DFixed,
+       metadataDFixed,
+       DRandom,
+       metadataDRandom,
+       file=f)
+  message(sprintf("%s saved on: %s\nFile size: %s bytes", 
+                  f,
+                  file.mtime(f),
+                  file.size(f)))
 } else {
-  warning("Integrity checks failed.\nworking.RData not saved.")
+  warning(sprinf("Integrity checks failed.\n%s not saved.", f))
 }
 ```
