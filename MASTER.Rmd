@@ -10,7 +10,7 @@ output:
 
 # Background
 
-See [README.md](https://github.com/benjamin-chan/AEAfterBreastCaACT).
+See the project [wiki](https://github.com/benjamin-chan/AEAfterBreastCaACT/wiki).
 
 
 # Scripts
