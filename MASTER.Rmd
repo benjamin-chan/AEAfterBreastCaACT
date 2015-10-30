@@ -1,7 +1,7 @@
 ---
 title: "Adverse Events after Adjuvent Chemotherapy for Breast Cancer"
 author: "Benjamin Chan"
-date: "October 10, 2015"
+date: "October 30, 2015"
 output: 
   html_document: 
     number_sections: yes
@@ -17,12 +17,15 @@ See [README.md](https://github.com/benjamin-chan/AEAfterBreastCaACT).
 
 Sequence of scripts:
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, fig.width=2, message=FALSE, warning=FALSE}
 scripts <- c("prologue.Rmd",
              "replicateOno.Rmd",
              "readAhles.Rmd",
              "epilogue.Rmd")
-message(sprintf("%02d: %s\n", seq(1, length(scripts)), scripts))
+# message(sprintf("%02d: %s\n", seq(1, length(scripts)), scripts))
+library(devtools)
+source_gist("https://gist.github.com/benjamin-chan/f7dc918e2607b412ccf5", quiet=TRUE)
+flow(scripts)
 ```
 
 ```{r, child=scripts}
