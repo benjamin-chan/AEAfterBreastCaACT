@@ -136,7 +136,8 @@ D <- D[,
                                 ((nGroup2 - 1) * (sdGroup2 ^ 2))) /
                                (nGroup1 + nGroup2 - 2)))]
 D <- D[,
-       `:=` (cohenD = diffMean / sdPooled)]
+       `:=` (cohenD = diffMean / sdPooled,
+             nTotal = nGroup1 + nGroup2)]
 D <- D[,
        `:=` (hedgesG = cohenD * (1 - (3 / ((4 * nTotal) - 9))))]
 D <- D[,
