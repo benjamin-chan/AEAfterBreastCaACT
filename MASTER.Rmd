@@ -22,6 +22,7 @@ Sequence of scripts:
 scripts <- c("prologue.Rmd",
              "replicateOno.Rmd",
              "readAhles.Rmd",
+             "combineData.Rmd",
              "epilogue.Rmd")
 # message(sprintf("%02d: %s\n", seq(1, length(scripts)), scripts))
 library(devtools)

@@ -1,0 +1,22 @@
+# Combine data from studies
+
+Load data from
+
+1. Ono
+1. Ahles
+
+```{r}
+f <- "Ono.RData"
+load(f, verbose=TRUE)
+D1 <- D
+colNames1 <- metadataD$colNames
+f <- "Ahles.RData"
+load(f, verbose=TRUE)
+D2 <- D
+colNames2 <- metadata$colNames
+intersect(colNames1, colNames2)
+colNames1
+colNames2
+D1
+D2
+```
