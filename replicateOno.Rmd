@@ -67,10 +67,28 @@ DOno <- D0[is.na(First.Auth), c(52:ncol(D0)), with=FALSE]
 Put the instrument-level rows in a separate data table, `D`.
 Only keep the columns needed to calculate fixed and random effects statistics.
 
-**Need more information** on the `RANDOM.EFFECT` column.
-This column has a mean of `r D0[, mean(RANDOM.EFFECT, na.rm=TRUE)]` 
-and a standard deviation of `r D0[, sd(RANDOM.EFFECT, na.rm=TRUE)]`.
-It's a mystery where this comes from.
+The `RANDOM.EFFECT` column was specific to the Ono analysis.
+The value in the Ono spreadsheet will be different for our use.
+
+```
+From: James Ogilvie [j.ogilvie@griffith.edu.au]
+Sent: Sunday, October 18, 2015 5:42 PM
+To: Benjamin Chan
+Cc: 'jamelnikow@ucdavis.edu'; 'm.ono@griffith.edu.au'; 'd.shum@griffith.edu.au'; Ayse Tezcan (aztezcan@ucdavis.edu); Meghan Soulsby (masoulsby@ucdavis.edu)
+Subject: Re: Fwd: request for data from your recently published meta-analysis
+
+Hi Benjamin,
+
+Thanks for contacting me regarding this issue. I had wondered whether Dr. Melnikow had received the data I had sent, as I had not received confirmation of my email containing the data.
+
+These are very good questions! It took me a while to get my head around the random effect model when performing this analysis. I am attaching an article that I found very useful in coming to terms with the model - hopefully you will find this useful too.
+
+To answer your questions,   is a constant across a pool of studies that you wish to examine and generate summary/aggregate statistics (e.g., grand mean effect size). Therefore, the value of the constant will change depending on the the specific pool of studies examined. It is calculated across the total pool of studies.
+
+  is the total Q statistic (assessing heterogeneity) that is calculated across ALL studies and relates to the grand mean effect size. It is not the same as the Q statistic in column BH. There is a Q statistic for each study (this is the Q in column BH), as well as a Q statistic for all studies pooled together (this being the  statistic). The formula for calculating the Q statistic are provided in the pdf I've attached titled "Heterogeneity in MA".
+
+As I've mentioned, the value of   is specific to the pool of studies you are examining. Therefore, the  value to calculate effect sizes according to a random effects model will be different for your analyses - assuming you have a different pool of studies that you are including in the analyses. Given this, the  value in column BL needs to be updated by you to be specific to the pool of studies you are looking at.
+```
 
 ```{r}
 importantVar <- c(1, 7:10, 12:15, 17, 35:39, 65, 31:34)
@@ -92,8 +110,8 @@ setnames(D,
            "meanGroup2",
            "sdGroup2",
            "direction",
-           "randomEffect",
-           gsub("\\.", "", names(D0)[31:33])))  # NEED TO FIND OUT WHERE RANDOM EFFECT COMES FROM
+           "randomEffect",  # Keep the value from Ono for verification purposes; do not use for analysis
+           gsub("\\.", "", names(D0)[31:34])))
 setnames(D, "DOMAINFORMETAkvd", "CognitiveDomainForMetaAnalysis")
 D <- D[direction == "Lower worse",
        `:=` (diffMean = meanGroup2 - meanGroup1)]
