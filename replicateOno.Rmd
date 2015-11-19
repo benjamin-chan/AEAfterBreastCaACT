@@ -8,17 +8,41 @@ Replicate data from
 
 Data file was requested and received from the co-author, [James Ogilvie](https://www.griffith.edu.au/health/school-applied-psychology/rhd-students/james-ogilvie), in October 2015.
 
+The `DOMAINFORMETAkvd` field (column AG) was coded by Kathleen Van Dyk <KVanDyk@mednet.ucla.edu>.
+
+```
+From: Van Dyk, Kathleen [KVanDyk@mednet.ucla.edu]
+Sent: Tuesday, November 03, 2015 5:08 PM
+To: Ayse Tezcan
+Cc: Benjamin Chan
+Subject: RE: Cognitive impairment draft paper
+
+Hi,
+ 
+Attached is the Ono spreadsheet with a new column with my suggestions for
+domains and domains for each Ahles test is in sheet 2.  I've highlighted tests
+that we may want to exclude if we want to consistently keep one or two
+measures per test.  Ben --- does it matter statistically if there is more than
+one measure from the same test (for example delayed recall and delayed
+recognition) in the same domain?  In almost every case we have total and delay
+for memory tests but if we add in more measures (Trial 6, Supraspan,
+Recognition) does this confound analyses because these are likely highly
+correlated measures within the same test?  Would all of the studies need to
+use the same measures in each test (i.e., every study uses Total and Delay)?
+I might not be asking this clearly --- let me know what you think.
+```
+
 Read data file (Google Sheet format).
 
 ```{r}
 # path <- "StudyDocuments/CognitiveImpairment"
 # list.files(path)
 # f <- sprintf("%s/%s", path, "Requested Chemo Data.xlsx")
-url <- "https://docs.google.com/spreadsheets/d/1kANi0laOaoFbBXxbanARcp7zowQ5eOfOcOr_sQLhJHo/edit?usp=sharing"
+url <- "https://docs.google.com/spreadsheets/d/1A--bncOv5_6yFM9gDiJ5xzQLteBFJns3mbUld_3IHJg/edit?usp=sharing"
 gs_auth()
 gs_url(url)
 # D0 <- read.xlsx(f, sheet=1)
-D0 <- gs_read(gs_url(url))
+D0 <- gs_read(gs_url(url), ws=1)
 D0 <- data.table(D0)
 ```
 
@@ -37,7 +61,7 @@ colNames
 Put the summary rows in a separate data table, `DOno`.
 
 ```{r}
-DOno <- D0[is.na(First.Auth), c(51:ncol(D0)), with=FALSE]
+DOno <- D0[is.na(First.Auth), c(52:ncol(D0)), with=FALSE]
 ```
 
 Put the instrument-level rows in a separate data table, `D`.
@@ -49,7 +73,7 @@ and a standard deviation of `r D0[, sd(RANDOM.EFFECT, na.rm=TRUE)]`.
 It's a mystery where this comes from.
 
 ```{r}
-importantVar <- c(1, 7:10, 12:15, 17, 34:38, 64, 31:33)
+importantVar <- c(1, 7:10, 12:15, 17, 35:39, 65, 31:34)
 D <- D0[!is.na(First.Auth), importantVar, with=FALSE]
 setnames(D,
          names(D),
@@ -70,6 +94,7 @@ setnames(D,
            "direction",
            "randomEffect",
            gsub("\\.", "", names(D0)[31:33])))  # NEED TO FIND OUT WHERE RANDOM EFFECT COMES FROM
+setnames(D, "DOMAINFORMETAkvd", "CognitiveDomainForMetaAnalysis")
 D <- D[direction == "Lower worse",
        `:=` (diffMean = meanGroup2 - meanGroup1)]
 D <- D[direction == "Greater worse",
@@ -99,7 +124,13 @@ D <- D[, effSizeWeightedRE := weightRE * hedgesG]
 Domains and tests.
 
 ```{r}
-D[, .N, .(CognitiveDomainPrimary, CogTest)][order(CognitiveDomainPrimary, CogTest)]
+D[,
+  .N,
+  .(CognitiveDomainForMetaAnalysis,
+    CognitiveDomainPrimary,
+    CogTest)][order(CognitiveDomainForMetaAnalysis,
+                    CognitiveDomainPrimary,
+                    CogTest)]
 ```
 
 Calculate fixed effects statisitcs.

@@ -29,8 +29,41 @@ Instruments.
 D[, .N, .(Variable, Label)]
 ```
 
-Save working data tables to file if the integrity checks passed.
-I don't need to save `DOno` since the integrity checks passed.
+Merge Kathleen's <KVanDyk@mednet.ucla.edu> domain assignments.
+
+```
+From: Van Dyk, Kathleen [KVanDyk@mednet.ucla.edu]
+Sent: Tuesday, November 03, 2015 5:08 PM
+To: Ayse Tezcan
+Cc: Benjamin Chan
+Subject: RE: Cognitive impairment draft paper
+
+Hi,
+ 
+Attached is the Ono spreadsheet with a new column with my suggestions for
+domains and domains for each Ahles test is in sheet 2.  I've highlighted tests
+that we may want to exclude if we want to consistently keep one or two
+measures per test.  Ben --- does it matter statistically if there is more than
+one measure from the same test (for example delayed recall and delayed
+recognition) in the same domain?  In almost every case we have total and delay
+for memory tests but if we add in more measures (Trial 6, Supraspan,
+Recognition) does this confound analyses because these are likely highly
+correlated measures within the same test?  Would all of the studies need to
+use the same measures in each test (i.e., every study uses Total and Delay)?
+I might not be asking this clearly --- let me know what you think.
+```
+
+```{r}
+url <- "https://docs.google.com/spreadsheets/d/1A--bncOv5_6yFM9gDiJ5xzQLteBFJns3mbUld_3IHJg/edit?usp=sharing"
+gs_auth()
+gs_url(url)
+D0 <- gs_read(gs_url(url), ws=2)
+D0 <- data.table(D0)
+CognitiveDomainForMetaAnalysis <- D0[!is.na(DOMAIN.FOR.META..kvd.), DOMAIN.FOR.META..kvd.]
+lookup <- cbind(D[, .N, .(Variable, Label)], CognitiveDomainForMetaAnalysis)[, .(Variable, CognitiveDomainForMetaAnalysis)]
+D <- merge(lookup, D, by="Variable")
+```
+
 
 ```{r}
 metadata = makeMetadata(D)
