@@ -1,7 +1,7 @@
 ---
 title: "Adverse Events after Adjuvent Chemotherapy for Breast Cancer"
 author: "[Benjamin Chan](http://careers.stackoverflow.com/benjaminchan)"
-date: "`r Sys.Date()`"
+date: "`r Sys.time()`"
 output: 
   html_document: 
     css: markdown.css
@@ -24,11 +24,10 @@ scripts <- c("prologue.Rmd",
              "readAhles.Rmd",
              "combineData.Rmd",
              "epilogue.Rmd")
-# message(sprintf("%02d: %s\n", seq(1, length(scripts)), scripts))
 library(devtools)
 source_gist("https://gist.github.com/benjamin-chan/f7dc918e2607b412ccf5", quiet=TRUE)
 flow(scripts)
 ```
 
-```{r, child=scripts}
+```{r, eval=TRUE, child=scripts}
 ```
