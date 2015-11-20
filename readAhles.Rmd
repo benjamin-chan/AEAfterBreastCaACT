@@ -54,7 +54,7 @@ I might not be asking this clearly --- let me know what you think.
 ```
 
 ```{r}
-url <- "https://docs.google.com/spreadsheets/d/1A--bncOv5_6yFM9gDiJ5xzQLteBFJns3mbUld_3IHJg/edit?usp=sharing"
+url <- "https://docs.google.com/spreadsheets/d/1DsR3lDMu5gFUOGI4G_pS6bI_lBKzXz1i4_OLr2poyCc/edit?usp=sharing"
 gs_auth()
 gs_url(url)
 D0 <- gs_read(gs_url(url), ws=2)
@@ -160,8 +160,8 @@ Save working data tables to file.
 metadata = makeMetadata(D)
 f <- "Ahles.RData"
 save(D, metadata, file=f)
-message(sprintf("%s saved on: %s\nFile size: %s bytes", 
+message(sprintf("%s saved on: %s\nFile size: %s KB", 
                 f,
                 file.mtime(f),
-                file.size(f)))
+                file.size(f) / 1e3))
 ```

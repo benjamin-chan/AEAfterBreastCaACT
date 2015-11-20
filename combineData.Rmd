@@ -19,4 +19,29 @@ colNames1
 colNames2
 D1
 D2
+D <- rbind(D1, D2, fill=TRUE)
+```
+
+Domains and tests.
+
+```{r}
+D[,
+  .N,
+  .(CognitiveDomainForMetaAnalysis,
+    CognitiveDomainPrimary,
+    CogTest)][order(CognitiveDomainForMetaAnalysis,
+                    CognitiveDomainPrimary,
+                    CogTest)]
+```
+
+Save working data tables to file.
+
+```{r}
+metadata = makeMetadata(D)
+f <- "AllStudies.RData"
+save(D, metadata, file=f)
+message(sprintf("%s saved on: %s\nFile size: %s KB", 
+                f,
+                file.mtime(f),
+                file.size(f) / 1e3))
 ```

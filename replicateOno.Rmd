@@ -38,7 +38,7 @@ Read data file (Google Sheet format).
 # path <- "StudyDocuments/CognitiveImpairment"
 # list.files(path)
 # f <- sprintf("%s/%s", path, "Requested Chemo Data.xlsx")
-url <- "https://docs.google.com/spreadsheets/d/1A--bncOv5_6yFM9gDiJ5xzQLteBFJns3mbUld_3IHJg/edit?usp=sharing"
+url <- "https://docs.google.com/spreadsheets/d/1DsR3lDMu5gFUOGI4G_pS6bI_lBKzXz1i4_OLr2poyCc/edit?usp=sharing"
 gs_auth()
 gs_url(url)
 # D0 <- read.xlsx(f, sheet=1)
@@ -61,7 +61,7 @@ colNames
 Put the summary rows in a separate data table, `DOno`.
 
 ```{r}
-DOno <- D0[is.na(First.Auth), c(52:ncol(D0)), with=FALSE]
+DOno <- D0[is.na(First.Auth) & !is.na(Weight), c(52:ncol(D0)), with=FALSE]
 ```
 
 Put the instrument-level rows in a separate data table, `D`.
@@ -91,8 +91,9 @@ As I've mentioned, the value of   is specific to the pool of studies you are exa
 ```
 
 ```{r}
-importantVar <- c(1, 7:10, 12:15, 17, 35:39, 65, 31:34)
-D <- D0[!is.na(First.Auth), importantVar, with=FALSE]
+importantVar <- c(1, 9:12, 14:17, 19, 35:39, 65, 33, 4, 5, 34)
+authors <- c("Bender", "Collins", "Jenkins", "Wefel (2004)")
+D <- D0[First.Auth %in% authors, importantVar, with=FALSE]
 setnames(D,
          names(D),
          c("author",
@@ -111,7 +112,7 @@ setnames(D,
            "sdGroup2",
            "direction",
            "randomEffect",  # Keep the value from Ono for verification purposes; do not use for analysis
-           gsub("\\.", "", names(D0)[31:34])))
+           gsub("\\.", "", names(D0)[c(33, 4, 5, 34)])))
 setnames(D, "DOMAINFORMETAkvd", "CognitiveDomainForMetaAnalysis")
 D <- D[direction == "Lower worse",
        `:=` (diffMean = meanGroup2 - meanGroup1)]
@@ -137,18 +138,6 @@ D <- D[,
        `:=` (effSizeWeightedFE = weightFE * hedgesG)]
 D <- D[, weightRE := 1 / (variance + randomEffect)]
 D <- D[, effSizeWeightedRE := weightRE * hedgesG]
-```
-
-Domains and tests.
-
-```{r}
-D[,
-  .N,
-  .(CognitiveDomainForMetaAnalysis,
-    CognitiveDomainPrimary,
-    CogTest)][order(CognitiveDomainForMetaAnalysis,
-                    CognitiveDomainPrimary,
-                    CogTest)]
 ```
 
 Calculate fixed effects statisitcs.
@@ -219,6 +208,43 @@ message(sprintf("Do my RANDOM effect statistic calculations agree with Ono's? %s
 print(xtable(DRandom), type="html")
 ```
 
+Exclude tests Kathleen determined to be not useful.
+
+```
+From: Van Dyk, Kathleen [KVanDyk@mednet.ucla.edu]
+Sent: Thursday, November 19, 2015 10:22 AM
+To: Benjamin Chan
+Cc: Ayse Tezcan
+Subject: RE: Cognitive impairment draft paper
+
+Hi Ben,
+ 
+Ok --- attached is the Ono spreadsheet with my suggested domains.  I did
+strikethrough for the measures we probably shouldn't include at all in the
+domains to keep it somewhat uniform across tests (i.e., some folks used Trial
+1 from a list-learning test, some just used Total and Delay, etc.).
+```
+
+```{r}
+strikethrough <- c("RAVL trial 6",
+                   "CVLT Trial 1",
+                   "RVLT trial 1",
+                   "AVLT supraspan")
+D <- D[!(CogTest %in% strikethrough)]
+```
+
+Domains and tests.
+
+```{r}
+D[,
+  .N,
+  .(CognitiveDomainForMetaAnalysis,
+    CognitiveDomainPrimary,
+    CogTest)][order(CognitiveDomainForMetaAnalysis,
+                    CognitiveDomainPrimary,
+                    CogTest)]
+```
+
 Save working data tables to file if the integrity checks passed.
 I don't need to save `DOno` since the integrity checks passed.
 
@@ -235,10 +261,10 @@ if (isCheckFixedPassed & isCheckRandomPassed) {
        DRandom,
        metadataDRandom,
        file=f)
-  message(sprintf("%s saved on: %s\nFile size: %s bytes", 
+  message(sprintf("%s saved on: %s\nFile size: %s KB", 
                   f,
                   file.mtime(f),
-                  file.size(f)))
+                  file.size(f) / 1e3))
 } else {
   warning(sprinf("Integrity checks failed.\n%s not saved.", f))
 }
