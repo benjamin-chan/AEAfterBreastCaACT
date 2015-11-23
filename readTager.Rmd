@@ -11,7 +11,10 @@ Data file was requested and received from the co-author, [Paula S. McKinley](pm4
 Read data file (SPSS format).
 
 ```{r}
-D <- read_sav("Tager_DataForMetaAnalysis.sav")
+f <- sprintf("%s/%s", pathIn, "Tager_DataForMetaAnalysis.sav")
+file.mtime(f)
+file.size(f)
+D <- read_sav(f)
 D <- data.table(D)
 D <- D[,
        `:=` (session = factor(session,

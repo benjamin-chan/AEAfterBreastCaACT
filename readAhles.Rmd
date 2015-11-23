@@ -11,9 +11,9 @@ Data file was requested and received from the co-author, [Yuelin Li](https://www
 Read data file (text format).
 
 ```{r}
-path <- "StudyDocuments/CognitiveImpairment"
-# list.files(path)
-f <- sprintf("%s/%s", path, "Soulsby_means.txt")
+f <- sprintf("%s/%s", pathIn, "Soulsby_means.txt")
+file.mtime(f)
+file.size(f)
 D <- fread(f, sep="|")
 ```
 

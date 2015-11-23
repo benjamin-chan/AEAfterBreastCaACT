@@ -1,5 +1,6 @@
 # Prologue
 
+1. Set path of input data sources
 1. Load [`devtools`](https://github.com/hadley/devtools)
 1. Source the [`loadPkg`](https://gist.github.com/benjamin-chan/3b59313e8347fffea425) function
 1. Load packages
@@ -7,6 +8,7 @@
 1. Start the job timer
 
 ```{r, echo=FALSE}
+pathIn <- "StudyDocuments/CognitiveImpairment"
 if (!require(devtools)) {install.packages("devtools", dependencies=TRUE)}
 library(devtools)
 source_gist("https://gist.github.com/benjamin-chan/3b59313e8347fffea425")

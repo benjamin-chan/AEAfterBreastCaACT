@@ -32,16 +32,19 @@ use the same measures in each test (i.e., every study uses Total and Delay)?
 I might not be asking this clearly --- let me know what you think.
 ```
 
-Read data file (Google Sheet format).
+Read data file from local file or Google Drive.
 
-```{r}
-# path <- "StudyDocuments/CognitiveImpairment"
-# list.files(path)
-# f <- sprintf("%s/%s", path, "Requested Chemo Data.xlsx")
+```{r, eval=TRUE}
+f <- sprintf("%s/%s", pathIn, "Requested Chemo Data domains kvd 11.19.15 2.xlsx")
+file.mtime(f)
+file.size(f)
+D0 <- read.xlsx(f, sheet=1)
+```
+
+```{r, eval=FALSE}
 url <- "https://docs.google.com/spreadsheets/d/1DsR3lDMu5gFUOGI4G_pS6bI_lBKzXz1i4_OLr2poyCc/edit?usp=sharing"
 gs_auth()
 gs_url(url)
-# D0 <- read.xlsx(f, sheet=1)
 D0 <- gs_read(gs_url(url), ws=1)
 D0 <- data.table(D0)
 ```
