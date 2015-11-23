@@ -126,6 +126,20 @@ Check against *Table 2*, column **CT Group** of [Tager, FA, et al.](http://link.
 ```{r}
 T2 <- T[, x := sprintf("%.2f (%.2f)", meanZ, sdZ)]
 T2[session == "Post surgery before treatment", .(variable, N, x)]
+Map `session` to *months after treatment*.
+[Tager, FA, et al.](http://link.springer.com/article/10.1007%2Fs10549-009-0606-8)
+
+* Baseline
+* 1 month after treatment
+* 6 months after treatment
+* 18 months after treatment
+
+As far as I can tell, values of `ptime` map to these, although seemingly imprecise.
+
+```{r}
+D[session == "Post surgery before treatment", monthsPostTx := 0]
+D[session == "Post treatment/6mths post surgery", monthsPostTx := 1]
+D[session == "6 month follow-up", monthsPostTx := 6]
 ```
 
 Merge Kathleen's <KVanDyk@mednet.ucla.edu> domain assignments.
