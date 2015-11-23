@@ -38,7 +38,8 @@ Read data file.
 f <- sprintf("%s/%s", pathIn, "Requested Chemo Data domains kvd 11.19.15 2.xlsx")
 file.mtime(f)
 file.size(f)
-D0 <- read.xlsx(f, sheet=1)
+D0 <- read.xlsx(f, sheet=1, check.names=TRUE)
+D0 <- data.table(D0)
 ```
 
 Show a map of the column names and locations.
@@ -87,7 +88,7 @@ As I've mentioned, the value of   is specific to the pool of studies you are exa
 
 ```{r}
 importantVar <- c(1, 9:12, 14:17, 19, 35:39, 65, 33, 4, 5, 34)
-authors <- c("Bender", "Collins", "Jenkins", "Wefel (2004)")
+authors <- c("Bender", "Collins", "Jenkins", "Wefel")
 D <- D0[First.Auth %in% authors, importantVar, with=FALSE]
 setnames(D,
          names(D),
@@ -109,6 +110,17 @@ setnames(D,
            "randomEffect",  # Keep the value from Ono for verification purposes; do not use for analysis
            gsub("\\.", "", names(D0)[c(33, 4, 5, 34)])))
 setnames(D, "DOMAINFORMETAkvd", "CognitiveDomainForMetaAnalysis")
+```
+
+The data in the received file is in the form of longitudinal means and standard deviations.
+
+```{r}
+D
+```
+
+Replicate spreadsheet calculations.
+
+```{r}
 D <- D[direction == "Lower worse",
        `:=` (diffMean = meanGroup2 - meanGroup1)]
 D <- D[direction == "Greater worse",
@@ -138,15 +150,15 @@ D <- D[, effSizeWeightedRE := weightRE * hedgesG]
 Calculate fixed effects statisitcs.
 
 ```{r}
-DFixed <- D[,
-              .(df = .N,
-                sumWeights = sum(weightFE),
-                effSize = sum(effSizeWeightedFE) / sum(weightFE),
-                se = sqrt(1 / sum(weightFE)),
-                sumEffSizeWeighted = sum(effSizeWeightedFE),
-                ssEffSizeWeighted = sum(weightFE * hedgesG ^ 2),
-                ssWeights = sum(weightFE ^ 2)),
-              .(author, timeDays)]
+DFixed <- D[!is.na(nTotal),
+            .(df = .N,
+              sumWeights = sum(weightFE),
+              effSize = sum(effSizeWeightedFE) / sum(weightFE),
+              se = sqrt(1 / sum(weightFE)),
+              sumEffSizeWeighted = sum(effSizeWeightedFE),
+              ssEffSizeWeighted = sum(weightFE * hedgesG ^ 2),
+              ssWeights = sum(weightFE ^ 2)),
+            .(author, timeDays)]
 DFixed <- DFixed[,
                  `:=` (z = effSize / se,
                        lowerCI = effSize + qnorm(0.025) * se,
@@ -172,7 +184,7 @@ print(xtable(DFixed), type="html")
 Calculate random effects statisitcs.
 
 ```{r}
-DRandom <- D[,
+DRandom <- D[!is.na(nTotal),
              .(df = .N,
                sumWeights = sum(weightRE),
                ssEffSizeWeighted = sum(weightRE * hedgesG ^ 2),
