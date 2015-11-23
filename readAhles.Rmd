@@ -29,6 +29,23 @@ Study design.
 D[, .(nrows = .N, totalN = sum(N)), .(txgrp, ptime)]
 ```
 
+Map `ptime` to *months after treatment*.
+[Ahles TA, et al.](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2988635/) reports results in terms of
+
+* Baseline
+* 1 month after treatment
+* 6 months after treatment
+* 18 months after treatment
+
+As far as I can tell, values of `ptime` map to these, although seemingly imprecise.
+
+```{r}
+D[ptime == "baseline", monthsPostTx := 0]
+D[ptime == "posttx", monthsPostTx := 1]
+D[ptime == "1yr", monthsPostTx := 6]
+D[ptime == "2yr", monthsPostTx := 18]
+```
+
 Exclude
 
 * Non-chemotherapy and control patients
