@@ -12,10 +12,7 @@ Read data file (SPSS format).
 
 ```{r}
 f <- sprintf("%s/%s", pathIn, "Tager_DataForMetaAnalysis.sav")
-message(sprintf("File: %s\nModification date: %s\nFile size: %.1f bytes",
-                f,
-                file.mtime(f),
-                file.size(f)))
+echoFile(f)
 D <- read_sav(f)
 D <- data.table(D)
 D <- D[,
@@ -190,10 +187,7 @@ I might not be asking this clearly --- let me know what you think.
 
 ```{r}
 f <- sprintf("%s/%s", pathIn, "Requested Chemo Data domains kvd 11.19.15 2.xlsx")
-message(sprintf("File: %s\nModification date: %s\nFile size: %.1f bytes",
-                f,
-                file.mtime(f),
-                file.size(f)))
+echoFile(f)
 D0 <- read.xlsx(f, sheet=1, check.names=TRUE)
 D0 <- data.table(D0)
 D0 <- D0[First.Auth == "Tager" & !is.na(DOMAIN.FOR.META..kvd.),

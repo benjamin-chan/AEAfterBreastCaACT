@@ -24,6 +24,12 @@ loadPkg("xtable")
 # loadPkg("dplyr")
 # loadPkg("ggplot2")
 # loadPkg("ggmcmc")
+echoFile <- function (f) {
+  message(sprintf("File: %s\nModification date: %s\nFile size: %.1f KB",
+                  f,
+                  file.mtime(f),
+                  file.size(f) / 1e3))
+}
 source_gist("https://gist.github.com/benjamin-chan/091209ab4eee1f171540")
 .timeStart <- Sys.time()
 ```
