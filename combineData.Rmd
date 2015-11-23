@@ -4,6 +4,7 @@ Load data from
 
 1. Ono
 1. Ahles
+1. Tager
 
 ```{r}
 f <- "Ono.RData"
