@@ -70,9 +70,7 @@ Keep *z*-score variables for these instruments.
 * WAIS-III Number/Letter
 * Rey Copy
 * Buschke Total 
-* Benton Visual Retention
-   * Correct
-   * Error
+* Benton Visual Retention Correct
 
 ```{r}
 measures <- c("tapdomz",
@@ -89,8 +87,7 @@ measures <- c("tapdomz",
               "numz",
               "reyz",
               "bustotz",
-              "bvrcoz",
-              "bvrerz")
+              "bvrcoz")
 ```
 
 Melt data.
