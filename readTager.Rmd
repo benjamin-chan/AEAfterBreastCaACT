@@ -96,6 +96,22 @@ Melt data.
 D <- melt(D,
           id.vars = c("subid", "session", "chemoyn", "chemowks", "CTregmen", "tx"),
           measure.vars = measures)
+setnames(D, "variable", "Variable")
+D <- D[Variable == "tapdomz", Label := "Finger Tapper - Dom Hand"]
+D <- D[Variable == "tapndomz", Label := "Finger Tapper - NonDom Hand"]
+D <- D[Variable == "pegdomz", Label := "Pegboard - Dom Hand"]
+D <- D[Variable == "pegndomz", Label := "Pegboard - Nondom Hand"]
+D <- D[Variable == "cowz", Label := "COWAT"]
+D <- D[Variable == "bntz", Label := "Boston Naming"]
+D <- D[Variable == "trlaz", Label := "Trail Making A"]
+D <- D[Variable == "trlbz", Label := "Trail Making B"]
+D <- D[Variable == "dsymz", Label := "WAIS-III Digit Symbol"]
+D <- D[Variable == "dspaz", Label := "WAIS-III Digit Span"]
+D <- D[Variable == "aritz", Label := "WAIS-III Arithmetic"]
+D <- D[Variable == "numz", Label := "WAIS-III Number/Letter"]
+D <- D[Variable == "reyz", Label := "Rey Copy"]
+D <- D[Variable == "bustotz", Label := "Buschke Total "]
+D <- D[Variable == "bvrcoz", Label := "Benton Visual Retention Correct"]
 setkey(D, subid, session)
 ```
 
@@ -116,16 +132,20 @@ T <- D[,
        .(N = .N,
          meanZ = mean(value, na.rm=TRUE),
          sdZ = sd(value, na.rm=TRUE)),
-       .(variable,
+       .(Variable,
+         Label,
          session)]
-setkey(T, variable, session)
+setkey(T, Variable, Label, session)
 ```
 
 Check against *Table 2*, column **CT Group** of [Tager, FA, et al.](http://link.springer.com/article/10.1007%2Fs10549-009-0606-8).
 
 ```{r}
-T2 <- T[, x := sprintf("%.2f (%.2f)", meanZ, sdZ)]
-T2[session == "Post surgery before treatment", .(variable, N, x)]
+T1 <- T[session == "Post surgery before treatment"]
+T1 <- T1[, x := sprintf("%.2f (%.2f)", meanZ, sdZ)]
+T1[, .(Variable, Label, N, x)]
+```
+
 Map `session` to *months after treatment*.
 [Tager, FA, et al.](http://link.springer.com/article/10.1007%2Fs10549-009-0606-8)
 
@@ -170,13 +190,16 @@ I might not be asking this clearly --- let me know what you think.
 f <- sprintf("%s/%s", pathIn, "Requested Chemo Data domains kvd 11.19.15 2.xlsx")
 file.mtime(f)
 file.size(f)
-D0 <- read.xlsx(f, sheet=2, check.names=TRUE)
+D0 <- read.xlsx(f, sheet=1, check.names=TRUE)
 D0 <- data.table(D0)
-CognitiveDomainForMetaAnalysis <- D0[!is.na(DOMAIN.FOR.META..kvd.), DOMAIN.FOR.META..kvd.]
-lookup <- cbind(D[, .N, .(Variable, Label)], CognitiveDomainForMetaAnalysis)[, .(Variable, CognitiveDomainForMetaAnalysis)]
-D <- merge(lookup, D, by="Variable")
+D0 <- D0[First.Auth == "Tager" & !is.na(DOMAIN.FOR.META..kvd.),
+         .(Label = Cog.Test,
+           CognitiveDomainForMetaAnalysis = DOMAIN.FOR.META..kvd.)]
+D0 <- D0[Label == "WAIS-IIIDigit Span",
+         Label := "WAIS-III Digit Span"]
+lookup <- D0
+T <- merge(lookup, T, by="Label")
 ```
-
 
 Save working data tables to file.
 
