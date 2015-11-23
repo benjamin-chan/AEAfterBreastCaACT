@@ -9,11 +9,25 @@ Load data from
 ```{r}
 f <- "Ono.RData"
 load(f, verbose=TRUE)
+metadataD
 D1 <- D
 colNames1 <- metadataD$colNames
 f <- "Ahles.RData"
 load(f, verbose=TRUE)
+metadata
 D2 <- D
+f <- "Tager.RData"
+load(f, verbose=TRUE)
+metadata
+D3 <- T
+```
+
+Structure of the data should be
+
+
+
+
+```{r, eval=FALSE}
 colNames2 <- metadata$colNames
 intersect(colNames1, colNames2)
 colNames1
@@ -25,7 +39,7 @@ D <- rbind(D1, D2, fill=TRUE)
 
 Domains and tests.
 
-```{r}
+```{r, eval=FALSE}
 D[,
   .N,
   .(CognitiveDomainForMetaAnalysis,
@@ -37,7 +51,7 @@ D[,
 
 Save working data tables to file.
 
-```{r}
+```{r, eval=FALSE}
 metadata = makeMetadata(D)
 f <- "AllStudies.RData"
 save(D, metadata, file=f)

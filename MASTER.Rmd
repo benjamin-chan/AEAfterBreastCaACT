@@ -5,6 +5,7 @@ date: "`r Sys.time()`"
 output: 
   html_document: 
     css: markdown.css
+    keep_md: yes
     number_sections: yes
     toc: yes
 ---

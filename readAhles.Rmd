@@ -12,8 +12,10 @@ Read data file (text format).
 
 ```{r}
 f <- sprintf("%s/%s", pathIn, "Soulsby_means.txt")
-file.mtime(f)
-file.size(f)
+message(sprintf("File: %s\nModification date: %s\nFile size: %.1f bytes",
+                f,
+                file.mtime(f),
+                file.size(f)))
 D <- fread(f, sep="|")
 ```
 
@@ -86,8 +88,10 @@ I might not be asking this clearly --- let me know what you think.
 
 ```{r}
 f <- sprintf("%s/%s", pathIn, "Requested Chemo Data domains kvd 11.19.15 2.xlsx")
-file.mtime(f)
-file.size(f)
+message(sprintf("File: %s\nModification date: %s\nFile size: %.1f bytes",
+                f,
+                file.mtime(f),
+                file.size(f)))
 D0 <- read.xlsx(f, sheet=2, check.names=TRUE)
 D0 <- data.table(D0)
 CognitiveDomainForMetaAnalysis <- D0[!is.na(DOMAIN.FOR.META..kvd.), DOMAIN.FOR.META..kvd.]

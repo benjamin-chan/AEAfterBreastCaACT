@@ -12,8 +12,10 @@ Read data file (SPSS format).
 
 ```{r}
 f <- sprintf("%s/%s", pathIn, "Tager_DataForMetaAnalysis.sav")
-file.mtime(f)
-file.size(f)
+message(sprintf("File: %s\nModification date: %s\nFile size: %.1f bytes",
+                f,
+                file.mtime(f),
+                file.size(f)))
 D <- read_sav(f)
 D <- data.table(D)
 D <- D[,
@@ -153,7 +155,6 @@ Map `session` to *months after treatment*.
 * Baseline
 * 1 month after treatment
 * 6 months after treatment
-* 18 months after treatment
 
 As far as I can tell, values of `ptime` map to these, although seemingly imprecise.
 
@@ -189,8 +190,10 @@ I might not be asking this clearly --- let me know what you think.
 
 ```{r}
 f <- sprintf("%s/%s", pathIn, "Requested Chemo Data domains kvd 11.19.15 2.xlsx")
-file.mtime(f)
-file.size(f)
+message(sprintf("File: %s\nModification date: %s\nFile size: %.1f bytes",
+                f,
+                file.mtime(f),
+                file.size(f)))
 D0 <- read.xlsx(f, sheet=1, check.names=TRUE)
 D0 <- data.table(D0)
 D0 <- D0[First.Auth == "Tager" & !is.na(DOMAIN.FOR.META..kvd.),
