@@ -121,8 +121,9 @@ Exclude
 * Measurements before surgery
 
 ```{r}
-D <- D[chemoyn != "No" |
+D <- D[chemoyn != "No" &
          session != "Pre-surgery"]
+D[, .N, .(chemoyn, session)]
 ```
 
 Calculate means and standard deviations
