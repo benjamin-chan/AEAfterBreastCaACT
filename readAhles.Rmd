@@ -17,10 +17,24 @@ file.size(f)
 D <- fread(f, sep="|")
 ```
 
+The data in the received file is in the form of longitudinal means and standard deviations.
+
+```{r}
+D
+```
+
 Study design.
 
 ```{r}
 D[, .(nrows = .N, totalN = sum(N)), .(txgrp, ptime)]
+```
+
+Exclude
+
+* Non-chemotherapy and control patients
+
+```{r}
+D <- D[txgrp == "chemo"]
 ```
 
 Instruments.

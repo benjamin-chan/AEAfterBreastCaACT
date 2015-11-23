@@ -121,6 +121,13 @@ T <- D[,
 setkey(T, variable, session)
 ```
 
+Check against *Table 2*, column **CT Group** of [Tager, FA, et al.](http://link.springer.com/article/10.1007%2Fs10549-009-0606-8).
+
+```{r}
+T2 <- T[, x := sprintf("%.2f (%.2f)", meanZ, sdZ)]
+T2[session == "Post surgery before treatment", .(variable, N, x)]
+```
+
 Save working data tables to file.
 
 ```{r}
