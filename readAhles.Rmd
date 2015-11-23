@@ -71,7 +71,7 @@ I might not be asking this clearly --- let me know what you think.
 f <- sprintf("%s/%s", pathIn, "Requested Chemo Data domains kvd 11.19.15 2.xlsx")
 file.mtime(f)
 file.size(f)
-D0 <- read.xlsx(f, sheet=2)
+D0 <- read.xlsx(f, sheet=2, check.names=TRUE)
 D0 <- data.table(D0)
 CognitiveDomainForMetaAnalysis <- D0[!is.na(DOMAIN.FOR.META..kvd.), DOMAIN.FOR.META..kvd.]
 lookup <- cbind(D[, .N, .(Variable, Label)], CognitiveDomainForMetaAnalysis)[, .(Variable, CognitiveDomainForMetaAnalysis)]
