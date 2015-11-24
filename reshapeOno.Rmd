@@ -1,0 +1,70 @@
+# Reshape Ono
+
+Reshape the Ono data set so it has a similar structure to the Ahles and Tager data.
+
+```{r}
+f <- "Ono.RData"
+load(f, verbose=TRUE)
+metadataD
+```
+
+Melt data.
+
+```{r}
+idVars <- c("author",
+            "comparisonGroup",
+            "treatmentGroup",
+            "timeDays",
+            "CogTest",
+            "CognitiveDomainPrimary",
+            "CognitiveDomainForMetaAnalysis",
+            "ScoreTyp")
+DN <- melt(D, id.vars = idVars,
+           measure.vars = c("nGroup1", "nGroup2"), value.name = "N",
+           na.rm=TRUE)
+DMean <- melt(D, id.vars = idVars,
+              measure.vars = c("meanGroup1", "meanGroup2"), value.name = "mean",
+              na.rm=TRUE)
+DSD <- melt(D, id.vars = idVars,
+            measure.vars = c("sdGroup1", "sdGroup2"), value.name = "sd",
+            na.rm=TRUE)
+```
+
+Rename `variable`.
+
+**NOTE:** `Group2` for Jenkins are the pre-treatment values.
+
+**NEED TO VERIFY:** Is `Group2` for Bender, Collins, and Wefel also the pre-treatment values?
+
+```{r}
+DN    <- DN   [variable == "nGroup1"   , time := "Post-treatment"]
+DMean <- DMean[variable == "meanGroup1", time := "Post-treatment"]
+DSD   <- DSD  [variable == "sdGroup1"  , time := "Post-treatment"]
+DN    <- DN   [variable == "nGroup2"   , time := "Pre-treatment"]
+DMean <- DMean[variable == "meanGroup2", time := "Pre-treatment"]
+DSD   <- DSD  [variable == "sdGroup2"  , time := "Pre-treatment"]
+```
+
+Merge the melted data.
+
+```{r}
+setkeyv(DN, c(idVars, "time"))
+setkeyv(DMean, c(idVars, "time"))
+setkeyv(DSD, c(idVars, "time"))
+D <- merge(DN[, variable := NULL],
+           DMean[, variable := NULL])
+D <- merge(D,
+           DSD[, variable := NULL])
+```
+
+Overwrite the data to file.
+
+```{r}
+metadata <- makeMetadata(D)
+f <- "Ono.RData"
+save(D, metadata, file=f)
+message(sprintf("%s saved on: %s\nFile size: %s KB", 
+                f,
+                file.mtime(f),
+                file.size(f) / 1e3))
+```

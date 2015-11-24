@@ -28,6 +28,7 @@ scripts <- c("prologue.Rmd",
              "replicateOno.Rmd",
              "readAhles.Rmd",
              "readTager.Rmd",
+             "reshapeOno.Rmd",
              "combineData.Rmd",
              "epilogue.Rmd")
 library(devtools)
