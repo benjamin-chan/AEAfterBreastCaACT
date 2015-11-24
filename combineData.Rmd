@@ -9,16 +9,16 @@ Load data from
 ```{r}
 f <- "Ono.RData"
 load(f, verbose=TRUE)
-metadataD
+metadata$colNames
 D1 <- D
 colNames1 <- metadataD$colNames
 f <- "Ahles.RData"
 load(f, verbose=TRUE)
-metadata
+metadata$colNames
 D2 <- D
 f <- "Tager.RData"
 load(f, verbose=TRUE)
-metadata
+metadata$colNames
 D3 <- T
 ```
 

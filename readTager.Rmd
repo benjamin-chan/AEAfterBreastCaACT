@@ -202,7 +202,7 @@ T <- merge(lookup, T, by="Label")
 Save working data tables to file.
 
 ```{r}
-metadata = makeMetadata(T)
+metadata <- makeMetadata(T)
 f <- "Tager.RData"
 save(T, metadata, file=f)
 message(sprintf("%s saved on: %s\nFile size: %s KB", 
