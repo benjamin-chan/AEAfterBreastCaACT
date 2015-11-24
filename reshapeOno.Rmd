@@ -30,31 +30,68 @@ DSD <- melt(D, id.vars = idVars,
             na.rm=TRUE)
 ```
 
-Rename `variable`.
-
-**NOTE:** `Group2` for Jenkins are the pre-treatment values.
-
-**NEED TO VERIFY:** Is `Group2` for Bender, Collins, and Wefel also the pre-treatment values?
+Check studies.
 
 ```{r}
-DN    <- DN   [variable == "nGroup1"   , time := "Post-treatment"]
-DMean <- DMean[variable == "meanGroup1", time := "Post-treatment"]
-DSD   <- DSD  [variable == "sdGroup1"  , time := "Post-treatment"]
-DN    <- DN   [variable == "nGroup2"   , time := "Pre-treatment"]
-DMean <- DMean[variable == "meanGroup2", time := "Pre-treatment"]
-DSD   <- DSD  [variable == "sdGroup2"  , time := "Pre-treatment"]
+D[, .N, .(author, comparisonGroup, treatmentGroup, timeDays)]
+```
+
+Prepare measure data sets for merging.
+
+```{r}
+DN    <- DN   [variable == "nGroup1"   , group := "Group 1"]
+DMean <- DMean[variable == "meanGroup1", group := "Group 1"]
+DSD   <- DSD  [variable == "sdGroup1"  , group := "Group 1"]
+DN    <- DN   [variable == "nGroup2"   , group := "Group 2"]
+DMean <- DMean[variable == "meanGroup2", group := "Group 2"]
+DSD   <- DSD  [variable == "sdGroup2"  , group := "Group 2"]
 ```
 
 Merge the melted data.
 
 ```{r}
-setkeyv(DN, c(idVars, "time"))
-setkeyv(DMean, c(idVars, "time"))
-setkeyv(DSD, c(idVars, "time"))
-D <- merge(DN[, variable := NULL],
-           DMean[, variable := NULL])
-D <- merge(D,
-           DSD[, variable := NULL])
+setkeyv(DN, c(idVars, "group"))
+setkeyv(DMean, c(idVars, "group"))
+setkeyv(DSD, c(idVars, "group"))
+D <- merge(DN[, variable := NULL], DMean[, variable := NULL])
+D <- merge(D, DSD[, variable := NULL])
+```
+
+Deduplicate pre-treatment data.
+
+```{r}
+D1 <- D[group == "Group 1"]
+setkeyv(D1, idVars[!(idVars %in% c("comparisonGroup", "treatmentGroup", "timeDays"))])
+D1 <- unique(D1)
+D1 <- D1[, monthsPostTx := 0]
+D1 <- D1[,
+         `:=` (comparisonGroup = NULL,
+               treatmentGroup = NULL,
+               timeDays = NULL,
+               group = NULL)]
+```
+
+Calculate `monthsPostRx` for post-treatment values.
+
+```{r}
+D2 <- D[group == "Group 2"]
+D2 <- D2[, monthsPostTx := round(timeDays / 365.25 * 12)]
+D2 <- D2[,
+         `:=` (comparisonGroup = NULL,
+               timeDays = NULL,
+               group = NULL)]
+```
+
+`rbind` pre-treatment and post-treatment data.
+
+```{r}
+D <- rbind(D1, D2, fill=TRUE)
+```
+
+Check data structure
+
+```{r}
+D[, .N, .(author, monthsPostTx)]
 ```
 
 Overwrite the data to file.
