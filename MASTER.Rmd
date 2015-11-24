@@ -15,6 +15,11 @@ output:
 See the project [wiki](https://github.com/benjamin-chan/AEAfterBreastCaACT/wiki).
 
 
+# Issues
+
+See [ISSUES.md](ISSUES.md).
+
+
 # Scripts
 
 Sequence of scripts:
