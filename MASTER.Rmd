@@ -16,7 +16,7 @@ See the project [wiki](https://github.com/benjamin-chan/AEAfterBreastCaACT/wiki)
 
 # Issues
 
-See [ISSUES.md](ISSUES.md).
+See [issues](https://github.com/benjamin-chan/AEAfterBreastCaACT/issues).
 
 
 # Scripts
