@@ -24,29 +24,73 @@ D3 <- T
 
 Structure of the data should be
 
+* `author`
+* `monthsPostTx`
+* `treatmentGroup`
+* `cognitiveDomainOriginal` (remove this column since we won't use it)
+* `cognitiveDomain`
+* `cognitiveTest`
+* `scoreType`
+* `n`
+* `mean`
+* `sd`
 
+Restructure Ono.
 
-
-```{r, eval=FALSE}
-colNames2 <- metadata$colNames
-intersect(colNames1, colNames2)
-colNames1
-colNames2
-D1
-D2
-D <- rbind(D1, D2, fill=TRUE)
+```{r}
+colOrder <- c("author",
+              "monthsPostTx",
+              "treatmentGroup",
+              "cognitiveDomain",
+              "cognitiveTest",
+              "scoreType",
+              "n",
+              "mean",
+              "sd")
+D1 <- D1[author == "Wefel", author := "Wefel 2004"]
+setnames(D1,
+         c("CogTest", "CognitiveDomainPrimary", "CognitiveDomainForMetaAnalysis", "ScoreTyp", "N"),
+         c("cognitiveTest", "cognitiveDomainOriginal", "cognitiveDomain", "scoreType", "n"))
+D1[,
+   `:=` (cognitiveDomainOriginal = NULL)]
+setcolorder(D1, colOrder)
 ```
 
-Domains and tests.
+Restructure Ahles.
 
-```{r, eval=FALSE}
-D[,
-  .N,
-  .(CognitiveDomainForMetaAnalysis,
-    CognitiveDomainPrimary,
-    CogTest)][order(CognitiveDomainForMetaAnalysis,
-                    CognitiveDomainPrimary,
-                    CogTest)]
+```{r}
+D2 <- D2[, author := "Ahles"]
+setnames(D2,
+         c("CognitiveDomainForMetaAnalysis", "txgrp", "Label", "N", "Mean", "StdDev"),
+         c("cognitiveDomain", "treatmentGroup", "cognitiveTest", "n", "mean", "sd"))
+D2[,
+   `:=` (Variable = NULL,
+         ptime = NULL,
+         NObs = NULL,
+         Median = NULL,
+         scoreType = "Z-score")]
+setcolorder(D2, colOrder)
+```
+
+Restructure Tager.
+
+```{r}
+D3 <- D3[, author := "Tager."]
+setnames(D3,
+         c("Label", "CognitiveDomainForMetaAnalysis", "N", "meanZ", "sdZ"),
+         c("cognitiveTest", "cognitiveDomain", "n", "mean", "sd"))
+D3[,
+   `:=` (Variable = NULL,
+         session = NULL,
+         treatmentGroup = "Chemo",
+         scoreType = "Z-score")]
+setcolorder(D3, colOrder)
+```
+
+`rbindlist` the data.
+
+```{r}
+D <- rbindlist(list(D1, D2, D3))
 ```
 
 Save working data tables to file.
