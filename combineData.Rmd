@@ -95,8 +95,8 @@ D <- rbindlist(list(D1, D2, D3))
 
 Save working data tables to file.
 
-```{r, eval=FALSE}
-metadata = makeMetadata(D)
+```{r}
+metadata <- makeMetadata(D)
 f <- "AllStudies.RData"
 save(D, metadata, file=f)
 message(sprintf("%s saved on: %s\nFile size: %s KB", 

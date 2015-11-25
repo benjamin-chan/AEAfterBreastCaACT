@@ -16,8 +16,8 @@ See [issues](https://github.com/benjamin-chan/AEAfterBreastCaACT/issues).
 
 Sequence of scripts:
 
-<!--html_preserve--><div id="htmlwidget-9453" style="width:192px;height:480px;" class="grViz"></div>
-<script type="application/json" data-for="htmlwidget-9453">{"x":{"diagram":"digraph {\n\ngraph [layout=dot]\n\nnode [fontname=\"Lato\"]\n\n  \"a\" [label = \"prologue.Rmd\", style = \"filled\", fontcolor = \"white\", color = \"#014386ff\", shape = \"oval\"] \n  \"b\" [label = \"replicateOno.Rmd\", style = \"filled\", fontcolor = \"white\", color = \"#014386ff\", shape = \"oval\"] \n  \"c\" [label = \"readAhles.Rmd\", style = \"filled\", fontcolor = \"white\", color = \"#014386ff\", shape = \"oval\"] \n  \"d\" [label = \"readTager.Rmd\", style = \"filled\", fontcolor = \"white\", color = \"#014386ff\", shape = \"oval\"] \n  \"e\" [label = \"reshapeOno.Rmd\", style = \"filled\", fontcolor = \"white\", color = \"#014386ff\", shape = \"oval\"] \n  \"f\" [label = \"combineData.Rmd\", style = \"filled\", fontcolor = \"white\", color = \"#014386ff\", shape = \"oval\"] \n  \"g\" [label = \"epilogue.Rmd\", style = \"filled\", fontcolor = \"white\", color = \"#014386ff\", shape = \"oval\"] \n  \"a\"->\"b\" \n  \"b\"->\"c\" \n  \"c\"->\"d\" \n  \"d\"->\"e\" \n  \"e\"->\"f\" \n  \"f\"->\"g\" \n}","config":{"engine":"dot","options":null}},"evals":[]}</script><!--/html_preserve-->
+<!--html_preserve--><div id="htmlwidget-1923" style="width:192px;height:480px;" class="grViz"></div>
+<script type="application/json" data-for="htmlwidget-1923">{"x":{"diagram":"digraph {\n\ngraph [layout=dot]\n\nnode [fontname=\"Lato\"]\n\n  \"a\" [label = \"prologue.Rmd\", style = \"filled\", fontcolor = \"white\", color = \"#014386ff\", shape = \"oval\"] \n  \"b\" [label = \"replicateOno.Rmd\", style = \"filled\", fontcolor = \"white\", color = \"#014386ff\", shape = \"oval\"] \n  \"c\" [label = \"readAhles.Rmd\", style = \"filled\", fontcolor = \"white\", color = \"#014386ff\", shape = \"oval\"] \n  \"d\" [label = \"readTager.Rmd\", style = \"filled\", fontcolor = \"white\", color = \"#014386ff\", shape = \"oval\"] \n  \"e\" [label = \"reshapeOno.Rmd\", style = \"filled\", fontcolor = \"white\", color = \"#014386ff\", shape = \"oval\"] \n  \"f\" [label = \"combineData.Rmd\", style = \"filled\", fontcolor = \"white\", color = \"#014386ff\", shape = \"oval\"] \n  \"g\" [label = \"epilogue.Rmd\", style = \"filled\", fontcolor = \"white\", color = \"#014386ff\", shape = \"oval\"] \n  \"a\"->\"b\" \n  \"b\"->\"c\" \n  \"c\"->\"d\" \n  \"d\"->\"e\" \n  \"e\"->\"f\" \n  \"f\"->\"g\" \n}","config":{"engine":"dot","options":null}},"evals":[]}</script><!--/html_preserve-->
 
 
 # Prologue
@@ -391,7 +391,7 @@ print(xtable(DFixed), type="html")
 ```
 
 <!-- html table generated in R 3.2.2 by xtable 1.7-4 package -->
-<!-- Wed Nov 25 10:41:35 2015 -->
+<!-- Wed Nov 25 15:02:04 2015 -->
 <table border=1>
 <tr> <th>  </th> <th> author </th> <th> timeDays </th> <th> df </th> <th> sumWeights </th> <th> effSize </th> <th> se </th> <th> sumEffSizeWeighted </th> <th> ssEffSizeWeighted </th> <th> ssWeights </th> <th> z </th> <th> lowerCI </th> <th> upperCI </th> <th> Q </th> <th> criticalValue </th> <th> pvalue </th> <th> Isq </th>  </tr>
   <tr> <td align="right"> 1 </td> <td> Bender </td> <td align="right"> 182.62 </td> <td align="right">  16 </td> <td align="right"> 96.80 </td> <td align="right"> 1.02 </td> <td align="right"> 0.10 </td> <td align="right"> 98.53 </td> <td align="right"> 241.49 </td> <td align="right"> 626.88 </td> <td align="right"> 10.01 </td> <td align="right"> 0.82 </td> <td align="right"> 1.22 </td> <td align="right"> 141.21 </td> <td align="right"> 26.30 </td> <td align="right"> 0.00 </td> <td align="right"> 88.67 </td> </tr>
@@ -448,7 +448,7 @@ print(xtable(DRandom), type="html")
 ```
 
 <!-- html table generated in R 3.2.2 by xtable 1.7-4 package -->
-<!-- Wed Nov 25 10:41:35 2015 -->
+<!-- Wed Nov 25 15:02:04 2015 -->
 <table border=1>
 <tr> <th>  </th> <th> author </th> <th> timeDays </th> <th> df </th> <th> sumWeights </th> <th> ssEffSizeWeighted </th> <th> ssWeights </th> <th> sumEffSizeWeighted </th> <th> effSize </th> <th> se </th> <th> z </th> <th> lowerCI </th> <th> upperCI </th> <th> Q </th> <th> criticalValue </th> <th> pvalue </th> <th> Isq </th>  </tr>
   <tr> <td align="right"> 1 </td> <td> Bender </td> <td align="right"> 182.62 </td> <td align="right">  16 </td> <td align="right"> 48.04 </td> <td align="right"> 137.29 </td> <td align="right"> 147.43 </td> <td align="right"> 53.60 </td> <td align="right"> 1.12 </td> <td align="right"> 0.14 </td> <td align="right"> 7.73 </td> <td align="right"> 0.83 </td> <td align="right"> 1.40 </td> <td align="right"> 77.50 </td> <td align="right"> 26.30 </td> <td align="right"> 0.00 </td> <td align="right"> 79.35 </td> </tr>
@@ -646,8 +646,8 @@ if (isCheckFixedPassed & isCheckRandomPassed) {
 ```
 
 ```
-## Ono.RData saved on: 2015-11-25 10:41:35
-## File size: 66.766 KB
+## Ono.RData saved on: 2015-11-25 15:02:04
+## File size: 66.808 KB
 ```
 
 # Read Ahles
@@ -879,8 +879,8 @@ message(sprintf("%s saved on: %s\nFile size: %s KB",
 ```
 
 ```
-## Ahles.RData saved on: 2015-11-25 10:41:35
-## File size: 21.16 KB
+## Ahles.RData saved on: 2015-11-25 15:02:04
+## File size: 21.132 KB
 ```
 
 # Read Tager
@@ -1174,8 +1174,8 @@ message(sprintf("%s saved on: %s\nFile size: %s KB",
 ```
 
 ```
-## Tager.RData saved on: 2015-11-25 10:41:36
-## File size: 19.084 KB
+## Tager.RData saved on: 2015-11-25 15:02:05
+## File size: 19.042 KB
 ```
 
 # Reshape Ono
@@ -1204,7 +1204,7 @@ metadataD
 
 ```
 ## $timeStamp
-## [1] "2015-11-25 10:41:35 PST"
+## [1] "2015-11-25 15:02:04 PST"
 ## 
 ## $objectSize
 ## [1] "42.3 Kb"
@@ -1296,19 +1296,19 @@ metadataD
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] xtable_1.7-4        haven_0.2.0         googlesheets_0.1.0 
-## [4] openxlsx_3.0.0      extrafont_0.17      DiagrammeR_0.7     
-## [7] devtools_1.8.0      data.table_1.9.6    RevoUtilsMath_3.2.2
+## [1] extrafont_0.17      DiagrammeR_0.7      xtable_1.7-4       
+## [4] haven_0.2.0         googlesheets_0.1.0  openxlsx_3.0.0     
+## [7] data.table_1.9.6    devtools_1.8.0      RevoUtilsMath_3.2.2
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] Rcpp_0.12.1      Rttf2pt1_1.3.3   rstudioapi_0.3.1 knitr_1.11      
-##  [5] xml2_0.1.2       magrittr_1.5     R6_2.1.1         dplyr_0.4.3     
-##  [9] stringr_1.0.0    httr_1.0.0       tools_3.2.2      parallel_3.2.2  
-## [13] DBI_0.3.1        extrafontdb_1.0  git2r_0.11.0     htmltools_0.2.6 
-## [17] rversions_1.0.2  assertthat_0.1   yaml_2.1.13      digest_0.6.8    
-## [21] formatR_1.2      htmlwidgets_0.5  curl_0.9.3       memoise_0.2.1   
-## [25] evaluate_0.7.2   rmarkdown_0.7    stringi_0.5-5    cellranger_1.0.0
-## [29] jsonlite_0.9.16  chron_2.3-47
+##  [1] Rcpp_0.12.1      cellranger_1.0.0 formatR_1.2      git2r_0.11.0    
+##  [5] tools_3.2.2      digest_0.6.8     jsonlite_0.9.16  memoise_0.2.1   
+##  [9] evaluate_0.7.2   DBI_0.3.1        rstudioapi_0.3.1 curl_0.9.3      
+## [13] yaml_2.1.13      parallel_3.2.2   Rttf2pt1_1.3.3   dplyr_0.4.3     
+## [17] httr_1.0.0       stringr_1.0.0    xml2_0.1.2       knitr_1.11      
+## [21] htmlwidgets_0.5  rversions_1.0.2  R6_2.1.1         rmarkdown_0.7   
+## [25] extrafontdb_1.0  magrittr_1.5     htmltools_0.2.6  assertthat_0.1  
+## [29] stringi_0.5-5    chron_2.3-47
 ```
 
 Melt data.
@@ -1462,8 +1462,8 @@ message(sprintf("%s saved on: %s\nFile size: %s KB",
 ```
 
 ```
-## Ono.RData saved on: 2015-11-25 10:41:36
-## File size: 20.18 KB
+## Ono.RData saved on: 2015-11-25 15:02:05
+## File size: 20.151 KB
 ```
 
 # Combine data from studies
@@ -1630,13 +1630,18 @@ Save working data tables to file.
 
 
 ```r
-metadata = makeMetadata(D)
+metadata <- makeMetadata(D)
 f <- "AllStudies.RData"
 save(D, metadata, file=f)
 message(sprintf("%s saved on: %s\nFile size: %s KB", 
                 f,
                 file.mtime(f),
                 file.size(f) / 1e3))
+```
+
+```
+## AllStudies.RData saved on: 2015-11-25 15:02:06
+## File size: 23.302 KB
 ```
 
 # Epilogue
@@ -1649,13 +1654,13 @@ message(sprintf("%s saved on: %s\nFile size: %s KB",
 
 ```
 ## $timeStart
-## [1] "2015-11-25 10:41:34"
+## [1] "2015-11-25 15:02:03"
 ## 
 ## $timeEnd
-## [1] "2015-11-25 10:41:37 PST"
+## [1] "2015-11-25 15:02:06 PST"
 ## 
 ## $timeElapsed
-## [1] "2.357 secs"
+## [1] "2.538 secs"
 ## 
 ## $Sys.info
 ##                      sysname                      release 
@@ -1683,17 +1688,17 @@ message(sprintf("%s saved on: %s\nFile size: %s KB",
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] xtable_1.7-4        haven_0.2.0         googlesheets_0.1.0 
-## [4] openxlsx_3.0.0      extrafont_0.17      DiagrammeR_0.7     
-## [7] devtools_1.8.0      data.table_1.9.6    RevoUtilsMath_3.2.2
+## [1] extrafont_0.17      DiagrammeR_0.7      xtable_1.7-4       
+## [4] haven_0.2.0         googlesheets_0.1.0  openxlsx_3.0.0     
+## [7] data.table_1.9.6    devtools_1.8.0      RevoUtilsMath_3.2.2
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] Rcpp_0.12.1      Rttf2pt1_1.3.3   rstudioapi_0.3.1 knitr_1.11      
-##  [5] xml2_0.1.2       magrittr_1.5     R6_2.1.1         dplyr_0.4.3     
-##  [9] stringr_1.0.0    httr_1.0.0       tools_3.2.2      parallel_3.2.2  
-## [13] DBI_0.3.1        extrafontdb_1.0  git2r_0.11.0     htmltools_0.2.6 
-## [17] rversions_1.0.2  assertthat_0.1   yaml_2.1.13      digest_0.6.8    
-## [21] formatR_1.2      htmlwidgets_0.5  curl_0.9.3       memoise_0.2.1   
-## [25] evaluate_0.7.2   rmarkdown_0.7    stringi_0.5-5    cellranger_1.0.0
-## [29] jsonlite_0.9.16  chron_2.3-47
+##  [1] Rcpp_0.12.1      cellranger_1.0.0 formatR_1.2      git2r_0.11.0    
+##  [5] tools_3.2.2      digest_0.6.8     jsonlite_0.9.16  memoise_0.2.1   
+##  [9] evaluate_0.7.2   DBI_0.3.1        rstudioapi_0.3.1 curl_0.9.3      
+## [13] yaml_2.1.13      parallel_3.2.2   Rttf2pt1_1.3.3   dplyr_0.4.3     
+## [17] httr_1.0.0       stringr_1.0.0    xml2_0.1.2       knitr_1.11      
+## [21] htmlwidgets_0.5  rversions_1.0.2  R6_2.1.1         rmarkdown_0.7   
+## [25] extrafontdb_1.0  magrittr_1.5     htmltools_0.2.6  assertthat_0.1  
+## [29] stringi_0.5-5    chron_2.3-47
 ```
