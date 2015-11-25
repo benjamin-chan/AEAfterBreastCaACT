@@ -75,7 +75,7 @@ setcolorder(D2, colOrder)
 Restructure Tager.
 
 ```{r}
-D3 <- D3[, author := "Tager."]
+D3 <- D3[, author := "Tager"]
 setnames(D3,
          c("Label", "CognitiveDomainForMetaAnalysis", "N", "meanZ", "sdZ"),
          c("cognitiveTest", "cognitiveDomain", "n", "mean", "sd"))
