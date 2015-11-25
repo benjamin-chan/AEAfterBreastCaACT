@@ -16,14 +16,8 @@ See [issues](https://github.com/benjamin-chan/AEAfterBreastCaACT/issues).
 
 Sequence of scripts:
 
-<!--html_preserve--><div id="htmlwidget-541" style="width:192px;height:480px;" class="grViz"></div>
-<script type="application/json" data-for="htmlwidget-541">{ "x": {
- "diagram": "digraph {\n\ngraph [layout=dot]\n\nnode [fontname=\"Lato\"]\n\n  \"a\" [label = \"prologue.Rmd\", style = \"filled\", fontcolor = \"white\", color = \"#014386ff\", shape = \"oval\"] \n  \"b\" [label = \"replicateOno.Rmd\", style = \"filled\", fontcolor = \"white\", color = \"#014386ff\", shape = \"oval\"] \n  \"c\" [label = \"readAhles.Rmd\", style = \"filled\", fontcolor = \"white\", color = \"#014386ff\", shape = \"oval\"] \n  \"d\" [label = \"readTager.Rmd\", style = \"filled\", fontcolor = \"white\", color = \"#014386ff\", shape = \"oval\"] \n  \"e\" [label = \"reshapeOno.Rmd\", style = \"filled\", fontcolor = \"white\", color = \"#014386ff\", shape = \"oval\"] \n  \"f\" [label = \"combineData.Rmd\", style = \"filled\", fontcolor = \"white\", color = \"#014386ff\", shape = \"oval\"] \n  \"g\" [label = \"epilogue.Rmd\", style = \"filled\", fontcolor = \"white\", color = \"#014386ff\", shape = \"oval\"] \n  \"a\"->\"b\" \n  \"b\"->\"c\" \n  \"c\"->\"d\" \n  \"d\"->\"e\" \n  \"e\"->\"f\" \n  \"f\"->\"g\" \n}",
-"config": {
- "engine": "dot",
-"options": null 
-} 
-},"evals": [  ] }</script><!--/html_preserve-->
+<!--html_preserve--><div id="htmlwidget-9453" style="width:192px;height:480px;" class="grViz"></div>
+<script type="application/json" data-for="htmlwidget-9453">{"x":{"diagram":"digraph {\n\ngraph [layout=dot]\n\nnode [fontname=\"Lato\"]\n\n  \"a\" [label = \"prologue.Rmd\", style = \"filled\", fontcolor = \"white\", color = \"#014386ff\", shape = \"oval\"] \n  \"b\" [label = \"replicateOno.Rmd\", style = \"filled\", fontcolor = \"white\", color = \"#014386ff\", shape = \"oval\"] \n  \"c\" [label = \"readAhles.Rmd\", style = \"filled\", fontcolor = \"white\", color = \"#014386ff\", shape = \"oval\"] \n  \"d\" [label = \"readTager.Rmd\", style = \"filled\", fontcolor = \"white\", color = \"#014386ff\", shape = \"oval\"] \n  \"e\" [label = \"reshapeOno.Rmd\", style = \"filled\", fontcolor = \"white\", color = \"#014386ff\", shape = \"oval\"] \n  \"f\" [label = \"combineData.Rmd\", style = \"filled\", fontcolor = \"white\", color = \"#014386ff\", shape = \"oval\"] \n  \"g\" [label = \"epilogue.Rmd\", style = \"filled\", fontcolor = \"white\", color = \"#014386ff\", shape = \"oval\"] \n  \"a\"->\"b\" \n  \"b\"->\"c\" \n  \"c\"->\"d\" \n  \"d\"->\"e\" \n  \"e\"->\"f\" \n  \"f\"->\"g\" \n}","config":{"engine":"dot","options":null}},"evals":[]}</script><!--/html_preserve-->
 
 
 # Prologue
@@ -87,7 +81,7 @@ echoFile(f)
 
 ```
 ## File: StudyDocuments/CognitiveImpairment/Requested Chemo Data domains kvd 11.19.15 2.xlsx
-## Modification date: 2015-11-19 20:36:53
+## Modification date: 2015-11-19 10:55:10
 ## File size: 178.9 KB
 ```
 
@@ -396,8 +390,8 @@ message(sprintf("Do my FIXED effect statistic calculations agree with Ono's? %s"
 print(xtable(DFixed), type="html")
 ```
 
-<!-- html table generated in R 3.2.1 by xtable 1.7-4 package -->
-<!-- Mon Nov 23 22:45:52 2015 -->
+<!-- html table generated in R 3.2.2 by xtable 1.7-4 package -->
+<!-- Wed Nov 25 10:41:35 2015 -->
 <table border=1>
 <tr> <th>  </th> <th> author </th> <th> timeDays </th> <th> df </th> <th> sumWeights </th> <th> effSize </th> <th> se </th> <th> sumEffSizeWeighted </th> <th> ssEffSizeWeighted </th> <th> ssWeights </th> <th> z </th> <th> lowerCI </th> <th> upperCI </th> <th> Q </th> <th> criticalValue </th> <th> pvalue </th> <th> Isq </th>  </tr>
   <tr> <td align="right"> 1 </td> <td> Bender </td> <td align="right"> 182.62 </td> <td align="right">  16 </td> <td align="right"> 96.80 </td> <td align="right"> 1.02 </td> <td align="right"> 0.10 </td> <td align="right"> 98.53 </td> <td align="right"> 241.49 </td> <td align="right"> 626.88 </td> <td align="right"> 10.01 </td> <td align="right"> 0.82 </td> <td align="right"> 1.22 </td> <td align="right"> 141.21 </td> <td align="right"> 26.30 </td> <td align="right"> 0.00 </td> <td align="right"> 88.67 </td> </tr>
@@ -453,8 +447,8 @@ message(sprintf("Do my RANDOM effect statistic calculations agree with Ono's? %s
 print(xtable(DRandom), type="html")
 ```
 
-<!-- html table generated in R 3.2.1 by xtable 1.7-4 package -->
-<!-- Mon Nov 23 22:45:52 2015 -->
+<!-- html table generated in R 3.2.2 by xtable 1.7-4 package -->
+<!-- Wed Nov 25 10:41:35 2015 -->
 <table border=1>
 <tr> <th>  </th> <th> author </th> <th> timeDays </th> <th> df </th> <th> sumWeights </th> <th> ssEffSizeWeighted </th> <th> ssWeights </th> <th> sumEffSizeWeighted </th> <th> effSize </th> <th> se </th> <th> z </th> <th> lowerCI </th> <th> upperCI </th> <th> Q </th> <th> criticalValue </th> <th> pvalue </th> <th> Isq </th>  </tr>
   <tr> <td align="right"> 1 </td> <td> Bender </td> <td align="right"> 182.62 </td> <td align="right">  16 </td> <td align="right"> 48.04 </td> <td align="right"> 137.29 </td> <td align="right"> 147.43 </td> <td align="right"> 53.60 </td> <td align="right"> 1.12 </td> <td align="right"> 0.14 </td> <td align="right"> 7.73 </td> <td align="right"> 0.83 </td> <td align="right"> 1.40 </td> <td align="right"> 77.50 </td> <td align="right"> 26.30 </td> <td align="right"> 0.00 </td> <td align="right"> 79.35 </td> </tr>
@@ -652,8 +646,8 @@ if (isCheckFixedPassed & isCheckRandomPassed) {
 ```
 
 ```
-## Ono.RData saved on: 2015-11-23 22:45:53
-## File size: 66.703 KB
+## Ono.RData saved on: 2015-11-25 10:41:35
+## File size: 66.766 KB
 ```
 
 # Read Ahles
@@ -676,7 +670,7 @@ echoFile(f)
 
 ```
 ## File: StudyDocuments/CognitiveImpairment/Soulsby_means.txt
-## Modification date: 2015-10-29 09:51:34
+## Modification date: 2015-10-30 08:21:29
 ## File size: 36.1 KB
 ```
 
@@ -859,7 +853,7 @@ echoFile(f)
 
 ```
 ## File: StudyDocuments/CognitiveImpairment/Requested Chemo Data domains kvd 11.19.15 2.xlsx
-## Modification date: 2015-11-19 20:36:53
+## Modification date: 2015-11-19 10:55:10
 ## File size: 178.9 KB
 ```
 
@@ -885,8 +879,8 @@ message(sprintf("%s saved on: %s\nFile size: %s KB",
 ```
 
 ```
-## Ahles.RData saved on: 2015-11-23 22:45:53
-## File size: 21.132 KB
+## Ahles.RData saved on: 2015-11-25 10:41:35
+## File size: 21.16 KB
 ```
 
 # Read Tager
@@ -909,7 +903,7 @@ echoFile(f)
 
 ```
 ## File: StudyDocuments/CognitiveImpairment/Tager_DataForMetaAnalysis.sav
-## Modification date: 2015-11-22 10:24:41
+## Modification date: 2015-11-23 09:18:36
 ## File size: 102.7 KB
 ```
 
@@ -1113,9 +1107,9 @@ As far as I can tell, values of `ptime` map to these, although seemingly impreci
 
 
 ```r
-D[session == "Post surgery before treatment", monthsPostTx := 0]
-D[session == "Post treatment/6mths post surgery", monthsPostTx := 1]
-D[session == "6 month follow-up", monthsPostTx := 6]
+T <- T[session == "Post surgery before treatment", monthsPostTx := 0]
+T <- T[session == "Post treatment/6mths post surgery", monthsPostTx := 1]
+T <- T[session == "6 month follow-up", monthsPostTx := 6]
 ```
 
 Merge Kathleen's <KVanDyk@mednet.ucla.edu> domain assignments.
@@ -1150,7 +1144,7 @@ echoFile(f)
 
 ```
 ## File: StudyDocuments/CognitiveImpairment/Requested Chemo Data domains kvd 11.19.15 2.xlsx
-## Modification date: 2015-11-19 20:36:53
+## Modification date: 2015-11-19 10:55:10
 ## File size: 178.9 KB
 ```
 
@@ -1180,8 +1174,8 @@ message(sprintf("%s saved on: %s\nFile size: %s KB",
 ```
 
 ```
-## Tager.RData saved on: 2015-11-23 22:45:54
-## File size: 19.018 KB
+## Tager.RData saved on: 2015-11-25 10:41:36
+## File size: 19.084 KB
 ```
 
 # Reshape Ono
@@ -1210,7 +1204,7 @@ metadataD
 
 ```
 ## $timeStamp
-## [1] "2015-11-23 22:45:52 PST"
+## [1] "2015-11-25 10:41:35 PST"
 ## 
 ## $objectSize
 ## [1] "42.3 Kb"
@@ -1277,15 +1271,19 @@ metadataD
 ##                      "numeric"                      "numeric" 
 ## 
 ## $sysInfo
-##        sysname        release        version       nodename        machine 
-##      "Windows"        "7 x64"   "build 9200"     "FAMILYPC"       "x86-64" 
-##          login           user effective_user 
-##          "Ben"          "Ben"          "Ben" 
+##                      sysname                      release 
+##                    "Windows"                      "7 x64" 
+##                      version                     nodename 
+## "build 7601, Service Pack 1"                    "GHBA299" 
+##                      machine                        login 
+##                     "x86-64"                      "chanb" 
+##                         user               effective_user 
+##                      "chanb"                      "chanb" 
 ## 
 ## $sessionInfo
-## R version 3.2.1 (2015-06-18)
+## R version 3.2.2 (2015-08-14)
 ## Platform: x86_64-w64-mingw32/x64 (64-bit)
-## Running under: Windows 8 x64 (build 9200)
+## Running under: Windows 7 x64 (build 7601) Service Pack 1
 ## 
 ## locale:
 ## [1] LC_COLLATE=English_United States.1252 
@@ -1298,21 +1296,19 @@ metadataD
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] extrafont_0.17     DiagrammeR_0.8     xtable_1.7-4      
-## [4] haven_0.2.0        googlesheets_0.1.0 openxlsx_3.0.0    
-## [7] data.table_1.9.6   devtools_1.7.0    
+## [1] xtable_1.7-4        haven_0.2.0         googlesheets_0.1.0 
+## [4] openxlsx_3.0.0      extrafont_0.17      DiagrammeR_0.7     
+## [7] devtools_1.8.0      data.table_1.9.6    RevoUtilsMath_3.2.2
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] Rcpp_0.11.6       Rttf2pt1_1.3.3    rstudioapi_0.3.1 
-##  [4] knitr_1.11        magrittr_1.5      R6_2.0.1         
-##  [7] stringr_1.0.0     httr_0.6.1        dplyr_0.4.3      
-## [10] tools_3.2.1       parallel_3.2.1    DBI_0.3.1        
-## [13] extrafontdb_1.0   htmltools_0.2.6   yaml_2.1.13      
-## [16] digest_0.6.8      assertthat_0.1    RJSONIO_1.3-0    
-## [19] formatR_1.2       htmlwidgets_0.3.2 bitops_1.0-6     
-## [22] RCurl_1.95-4.6    evaluate_0.8      rmarkdown_0.8    
-## [25] stringi_0.4-1     cellranger_1.0.0  jsonlite_0.9.16  
-## [28] chron_2.3-47
+##  [1] Rcpp_0.12.1      Rttf2pt1_1.3.3   rstudioapi_0.3.1 knitr_1.11      
+##  [5] xml2_0.1.2       magrittr_1.5     R6_2.1.1         dplyr_0.4.3     
+##  [9] stringr_1.0.0    httr_1.0.0       tools_3.2.2      parallel_3.2.2  
+## [13] DBI_0.3.1        extrafontdb_1.0  git2r_0.11.0     htmltools_0.2.6 
+## [17] rversions_1.0.2  assertthat_0.1   yaml_2.1.13      digest_0.6.8    
+## [21] formatR_1.2      htmlwidgets_0.5  curl_0.9.3       memoise_0.2.1   
+## [25] evaluate_0.7.2   rmarkdown_0.7    stringi_0.5-5    cellranger_1.0.0
+## [29] jsonlite_0.9.16  chron_2.3-47
 ```
 
 Melt data.
@@ -1466,8 +1462,8 @@ message(sprintf("%s saved on: %s\nFile size: %s KB",
 ```
 
 ```
-## Ono.RData saved on: 2015-11-23 22:45:54
-## File size: 20.143 KB
+## Ono.RData saved on: 2015-11-25 10:41:36
+## File size: 20.18 KB
 ```
 
 # Combine data from studies
@@ -1548,7 +1544,7 @@ metadata$colNames
 ## [1] "Label"                          "CognitiveDomainForMetaAnalysis"
 ## [3] "Variable"                       "session"                       
 ## [5] "N"                              "meanZ"                         
-## [7] "sdZ"
+## [7] "sdZ"                            "monthsPostTx"
 ```
 
 ```r
@@ -1557,31 +1553,77 @@ D3 <- T
 
 Structure of the data should be
 
+* `author`
+* `monthsPostTx`
+* `treatmentGroup`
+* `cognitiveDomainOriginal` (remove this column since we won't use it)
+* `cognitiveDomain`
+* `cognitiveTest`
+* `scoreType`
+* `n`
+* `mean`
+* `sd`
 
-
+Restructure Ono.
 
 
 ```r
-colNames2 <- metadata$colNames
-intersect(colNames1, colNames2)
-colNames1
-colNames2
-D1
-D2
-D <- rbind(D1, D2, fill=TRUE)
+colOrder <- c("author",
+              "monthsPostTx",
+              "treatmentGroup",
+              "cognitiveDomain",
+              "cognitiveTest",
+              "scoreType",
+              "n",
+              "mean",
+              "sd")
+D1 <- D1[author == "Wefel", author := "Wefel 2004"]
+setnames(D1,
+         c("CogTest", "CognitiveDomainPrimary", "CognitiveDomainForMetaAnalysis", "ScoreTyp", "N"),
+         c("cognitiveTest", "cognitiveDomainOriginal", "cognitiveDomain", "scoreType", "n"))
+D1[,
+   `:=` (cognitiveDomainOriginal = NULL)]
+setcolorder(D1, colOrder)
 ```
 
-Domains and tests.
+Restructure Ahles.
 
 
 ```r
-D[,
-  .N,
-  .(CognitiveDomainForMetaAnalysis,
-    CognitiveDomainPrimary,
-    CogTest)][order(CognitiveDomainForMetaAnalysis,
-                    CognitiveDomainPrimary,
-                    CogTest)]
+D2 <- D2[, author := "Ahles"]
+setnames(D2,
+         c("CognitiveDomainForMetaAnalysis", "txgrp", "Label", "N", "Mean", "StdDev"),
+         c("cognitiveDomain", "treatmentGroup", "cognitiveTest", "n", "mean", "sd"))
+D2[,
+   `:=` (Variable = NULL,
+         ptime = NULL,
+         NObs = NULL,
+         Median = NULL,
+         scoreType = "Z-score")]
+setcolorder(D2, colOrder)
+```
+
+Restructure Tager.
+
+
+```r
+D3 <- D3[, author := "Tager."]
+setnames(D3,
+         c("Label", "CognitiveDomainForMetaAnalysis", "N", "meanZ", "sdZ"),
+         c("cognitiveTest", "cognitiveDomain", "n", "mean", "sd"))
+D3[,
+   `:=` (Variable = NULL,
+         session = NULL,
+         treatmentGroup = "Chemo",
+         scoreType = "Z-score")]
+setcolorder(D3, colOrder)
+```
+
+`rbindlist` the data.
+
+
+```r
+D <- rbindlist(list(D1, D2, D3))
 ```
 
 Save working data tables to file.
@@ -1607,24 +1649,28 @@ message(sprintf("%s saved on: %s\nFile size: %s KB",
 
 ```
 ## $timeStart
-## [1] "2015-11-23 22:45:52"
+## [1] "2015-11-25 10:41:34"
 ## 
 ## $timeEnd
-## [1] "2015-11-23 22:45:54 PST"
+## [1] "2015-11-25 10:41:37 PST"
 ## 
 ## $timeElapsed
-## [1] "2.598832 secs"
+## [1] "2.357 secs"
 ## 
 ## $Sys.info
-##        sysname        release        version       nodename        machine 
-##      "Windows"        "7 x64"   "build 9200"     "FAMILYPC"       "x86-64" 
-##          login           user effective_user 
-##          "Ben"          "Ben"          "Ben" 
+##                      sysname                      release 
+##                    "Windows"                      "7 x64" 
+##                      version                     nodename 
+## "build 7601, Service Pack 1"                    "GHBA299" 
+##                      machine                        login 
+##                     "x86-64"                      "chanb" 
+##                         user               effective_user 
+##                      "chanb"                      "chanb" 
 ## 
 ## $sessionInfo
-## R version 3.2.1 (2015-06-18)
+## R version 3.2.2 (2015-08-14)
 ## Platform: x86_64-w64-mingw32/x64 (64-bit)
-## Running under: Windows 8 x64 (build 9200)
+## Running under: Windows 7 x64 (build 7601) Service Pack 1
 ## 
 ## locale:
 ## [1] LC_COLLATE=English_United States.1252 
@@ -1637,19 +1683,17 @@ message(sprintf("%s saved on: %s\nFile size: %s KB",
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] extrafont_0.17     DiagrammeR_0.8     xtable_1.7-4      
-## [4] haven_0.2.0        googlesheets_0.1.0 openxlsx_3.0.0    
-## [7] data.table_1.9.6   devtools_1.7.0    
+## [1] xtable_1.7-4        haven_0.2.0         googlesheets_0.1.0 
+## [4] openxlsx_3.0.0      extrafont_0.17      DiagrammeR_0.7     
+## [7] devtools_1.8.0      data.table_1.9.6    RevoUtilsMath_3.2.2
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] Rcpp_0.11.6       Rttf2pt1_1.3.3    rstudioapi_0.3.1 
-##  [4] knitr_1.11        magrittr_1.5      R6_2.0.1         
-##  [7] stringr_1.0.0     httr_0.6.1        dplyr_0.4.3      
-## [10] tools_3.2.1       parallel_3.2.1    DBI_0.3.1        
-## [13] extrafontdb_1.0   htmltools_0.2.6   yaml_2.1.13      
-## [16] digest_0.6.8      assertthat_0.1    RJSONIO_1.3-0    
-## [19] formatR_1.2       htmlwidgets_0.3.2 bitops_1.0-6     
-## [22] RCurl_1.95-4.6    evaluate_0.8      rmarkdown_0.8    
-## [25] stringi_0.4-1     cellranger_1.0.0  jsonlite_0.9.16  
-## [28] chron_2.3-47
+##  [1] Rcpp_0.12.1      Rttf2pt1_1.3.3   rstudioapi_0.3.1 knitr_1.11      
+##  [5] xml2_0.1.2       magrittr_1.5     R6_2.1.1         dplyr_0.4.3     
+##  [9] stringr_1.0.0    httr_1.0.0       tools_3.2.2      parallel_3.2.2  
+## [13] DBI_0.3.1        extrafontdb_1.0  git2r_0.11.0     htmltools_0.2.6 
+## [17] rversions_1.0.2  assertthat_0.1   yaml_2.1.13      digest_0.6.8    
+## [21] formatR_1.2      htmlwidgets_0.5  curl_0.9.3       memoise_0.2.1   
+## [25] evaluate_0.7.2   rmarkdown_0.7    stringi_0.5-5    cellranger_1.0.0
+## [29] jsonlite_0.9.16  chron_2.3-47
 ```
