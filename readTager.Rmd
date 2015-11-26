@@ -157,8 +157,8 @@ As far as I can tell, values of `ptime` map to these, although seemingly impreci
 
 ```{r}
 T <- T[session == "Post surgery before treatment", monthsPostTx := 0]
-T <- T[session == "Post treatment/6mths post surgery", monthsPostTx := 1]
-T <- T[session == "6 month follow-up", monthsPostTx := 6]
+T <- T[session == "Post treatment/6mths post surgery", monthsPostTx := 6]
+T <- T[session == "6 month follow-up", monthsPostTx := 12]
 ```
 
 Merge Kathleen's <KVanDyk@mednet.ucla.edu> domain assignments.
