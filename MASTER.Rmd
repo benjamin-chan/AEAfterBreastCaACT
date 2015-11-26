@@ -30,6 +30,7 @@ scripts <- c("prologue.Rmd",
              "readTager.Rmd",
              "reshapeOno.Rmd",
              "combineData.Rmd",
+             "runMetaAnalysis.Rmd",
              "epilogue.Rmd")
 library(devtools)
 source_gist("https://gist.github.com/benjamin-chan/f7dc918e2607b412ccf5", quiet=TRUE)
