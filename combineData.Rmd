@@ -47,10 +47,12 @@ colOrder <- c("author",
               "n",
               "mean",
               "sd")
-D1 <- D1[author == "Wefel", author := "Wefel 2004"]
 setnames(D1,
          c("CogTest", "CognitiveDomainPrimary", "CognitiveDomainForMetaAnalysis", "ScoreTyp", "N"),
          c("cognitiveTest", "cognitiveDomainOriginal", "cognitiveDomain", "scoreType", "n"))
+D1 <- D1[author == "Wefel", author := "Wefel 2004"]
+D1 <- D1[scoreType == "z score", scoreType := "Z-score"]
+D1 <- D1[scoreType == "Scaled scores", scoreType := "Scaled score"]
 D1[,
    `:=` (cognitiveDomainOriginal = NULL)]
 setcolorder(D1, colOrder)
@@ -91,6 +93,21 @@ setcolorder(D3, colOrder)
 
 ```{r}
 D <- rbindlist(list(D1, D2, D3))
+```
+
+Identify timed tests.
+
+```{r}
+D <- D[, isTimed := grepl("sec|time", cognitiveTest, ignore.case=TRUE)]
+```
+
+Output to CSV for Kathleen to verify.
+
+```{r}
+tests <- unique(D[, .(isTimed, cognitiveDomain, cognitiveTest)])
+setorder(tests, isTimed, cognitiveDomain, cognitiveTest)
+f <- "tests.csv"
+write.csv(tests, f, row.names=FALSE)
 ```
 
 Save working data tables to file.
