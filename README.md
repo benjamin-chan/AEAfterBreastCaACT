@@ -1,7 +1,7 @@
 # What are the risks of long term adverse events after breast cancer adjuvant chemotherapy? A Systematic Review
 
 * Project [wiki](https://github.com/benjamin-chan/AEAfterBreastCaACT/wiki)
-    * Goals and objectives are here
+* Issues and to-do [list](https://github.com/benjamin-chan/AEAfterBreastCaACT/issues)
 
 ## Topics
 
