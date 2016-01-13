@@ -13,3 +13,11 @@
 2. [Forest plot](https://github.com/benjamin-chan/AEAfterBreastCaACT/blob/master/CognitiveImpairment/Output/forest.png)
 3. [Funnel plot](https://github.com/benjamin-chan/AEAfterBreastCaACT/blob/master/CognitiveImpairment/Output/funnel.png)
 3. [Complete details](https://github.com/benjamin-chan/AEAfterBreastCaACT/tree/master/CognitiveImpairment#cognitive-impairment)
+
+### Ovarian failure
+
+### Secondary malignancies
+
+### Peripheral neuropathy
+
+### Cardiac toxicity
