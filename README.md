@@ -8,11 +8,11 @@
 ### Cognitive impairment
 
 1. Topic [wiki](https://github.com/benjamin-chan/AEAfterBreastCaACT/wiki/Cognitive-impairment)
-2. [Model description](CognitiveImpairment#meta-analysis)
-2. Table of [pooled domain effects](CognitiveImpairment#pooled-domain-effects)
+2. [Model description](CognitiveImpairment/README.md#meta-analysis-pre-post)
+2. Table of [pooled domain effects](CognitiveImpairment/README.md#pooled-domain-effects)
 2. [Forest plot](CognitiveImpairment/Output/forest.png)
 3. [Funnel plot](CognitiveImpairment/Output/funnel.png)
-3. [Complete details](CognitiveImpairment#cognitive-impairment)
+3. [Complete details](CognitiveImpairment/README.md)
 
 ### Ovarian failure
 
